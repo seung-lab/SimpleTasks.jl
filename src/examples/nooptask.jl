@@ -29,10 +29,7 @@ end
 
 function full_output_path(task::NoOpTaskDetails,
         input::AbstractString)
-    path_end = (length(input) + 1 -
-        (search(reverse(input), "/") - 1)).stop
-        println(" end is $path_end paht is $(input[path_end:end]) $input")
-
+    path_end = rsearch(full_path_file_name, "/").start + 1
 
     return "$(task.basicInfo.baseDirectory)/$OUTPUT_FOLDER/" *
         "$(input[path_end:end])"

@@ -26,8 +26,7 @@ function to_filename(cache::FileSystemCacheService, key::AbstractString)
 end
 
 function create_path(full_path_file_name::AbstractString)
-    path_end = (length(full_path_file_name) + 1 -
-        search(reverse(full_path_file_name), "/")).stop
+    path_end = rsearch(full_path_file_name, "/").start + 1
     if path_end > 0
         mkpath(full_path_file_name[1:path_end])
     end
