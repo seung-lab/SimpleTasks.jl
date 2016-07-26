@@ -11,7 +11,6 @@ Get in input from remote. Optionally override the cache.
 """
 function get(datasource::DatasourceService, key::AbstractString;
         override_cache::Bool=false)
-        println("this get here")
     error("get is not implemented for $datasource")
 end
 
@@ -25,7 +24,6 @@ Get in multiple inputs from remote. Optionally override the cache.
 # to Array{AbstractString, 1}
 function get{String <: AbstractString}(datasource::DatasourceService,
         keys::Array{String, 1}; override_cache::Bool=false)
-        println("This one ")
     return map((key) -> Datasource.get(datasource, key;
         override_cache=override_cache), keys)
 end

@@ -24,7 +24,7 @@ function test_run()
     for test_input in TEST_INPUTS
         buffer = IOBuffer(test_input)
         seekstart(buffer)
-        println("priming with $(full_output_path(task, test_input)) $test_input")
+        Datasource.put!(datasource, full_input_path(task, test_input), buffer)
         Datasource.put!(datasource, full_output_path(task, test_input), buffer)
     end
 

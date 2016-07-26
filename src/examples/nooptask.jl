@@ -29,7 +29,7 @@ end
 
 function full_output_path(task::NoOpTaskDetails,
         input::AbstractString)
-    path_end = rsearch(full_path_file_name, "/").start + 1
+    path_end = rsearch(input, "/").start + 1
 
     return "$(task.basicInfo.baseDirectory)/$OUTPUT_FOLDER/" *
         "$(input[path_end:end])"
@@ -37,16 +37,12 @@ end
 
 function DaemonTask.prepare(task::NoOpTaskDetails,
         datasource::DatasourceService)
-    println("Preparing NoOpTask")
-    println("$(typeof(datasource))")
     Datasource.get(datasource,
         map((input) -> full_input_path(task, input), task.basicInfo.inputs))
 end
 
 function DaemonTask.execute(task::NoOpTaskDetails,
         datasource::DatasourceService)
-    println("executing task NOOP $(task.basicInfo.id)")
-
     inputs = task.basicInfo.inputs
 
     if length(inputs) == 0
@@ -64,11 +60,9 @@ function DaemonTask.execute(task::NoOpTaskDetails,
 
     # setting new values into the cache
     output_keys = map((input) -> full_output_path(task, input), inputs);
-    Datasource.put!(datasource,
-        output_keys,
-        map((input) ->
-            Datasource.get(datasource, full_input_path(task, input)), inputs),
-        only_cache = true)
+    output_streams = map((input) ->
+        Datasource.get(datasource, full_input_path(task, input)), inputs)
+    Datasource.put!(datasource, output_keys, output_streams; only_cache = true)
 
     return DaemonTask.Result(true, output_keys)
 end

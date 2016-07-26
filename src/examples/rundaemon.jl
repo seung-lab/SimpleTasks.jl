@@ -1,4 +1,4 @@
-include("../../Julimaps.jl")
+include("../Julitasks.jl")
 
 module RunDaemon
 
@@ -10,7 +10,6 @@ using Julitasks.Services.BucketCacheDatasource
 using Julitasks.Services.Daemon
 using Julitasks.Examples.NoOpTask
 
-import Julimaps
 import AWS
 
 type RunConfig

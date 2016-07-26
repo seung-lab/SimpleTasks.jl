@@ -77,7 +77,6 @@ end
 MockDatasourceService() = MockDatasourceService(Dict())
 function Datasource.get(datasource::MockDatasourceService,
         key::AbstractString; override_cache::Bool=false)
-        println("returning $datasource")
     if haskey(datasource.mockSource, key)
         data = datasource.mockSource[key]
         seekstart(data)
@@ -88,10 +87,12 @@ function Datasource.get(datasource::MockDatasourceService,
 end
 function Datasource.put!(datasource::MockDatasourceService, key::AbstractString,
         new_value::Union{IO, Void}=nothing; only_cache::Bool=false)
-    data = IOBuffer()
-    write(data, readbytes(new_value))
-    seekstart(data)
-    datasource.mockSource[key] = data
+    if new_value != nothing
+        data = IOBuffer()
+        write(data, readbytes(new_value))
+        seekstart(data)
+        datasource.mockSource[key] = data
+    end
 end
 
 end # module MockServices
