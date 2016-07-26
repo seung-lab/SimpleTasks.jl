@@ -15,7 +15,7 @@ type Info
     inputs::Array{AbstractString, 1}
 end
 
-function Info(dict::Dict{AbstractString, Any})
+function Info{String <: AbstractString}(dict::Dict{String, Any})
     if haskey(dict, "id")
         id = typeof(dict["id"]) <: Int ?  dict["id"] : parse(Int64, dict["id"])
     else
