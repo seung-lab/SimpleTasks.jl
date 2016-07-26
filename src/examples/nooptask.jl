@@ -20,7 +20,7 @@ type NoOpTaskDetails <: DaemonTaskDetails
 end
 
 const NAME = "NO_OP"
-const OUTPUT_FOLDER = "1_output"
+const OUTPUT_FOLDER = "0_output"
 
 function full_input_path(task::NoOpTaskDetails,
         input::AbstractString)

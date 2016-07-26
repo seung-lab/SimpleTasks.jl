@@ -55,6 +55,7 @@ function Bucket.download(bucket::AWSCLIBucketService,
 
     if local_file == nothing
         (s3_output, process) = open(download_cmd, "r")
+        wait(process)
         return s3_output
     # ugh julia doesn't support piping directly to IOBuffers yet
     #=https://github.com/JuliaLang/julia/issues/14437=#
