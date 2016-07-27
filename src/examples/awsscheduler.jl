@@ -70,7 +70,7 @@ function schedule(queue_name, bucket_name)
     bucket = AWSCLIBucketService(env.aws_id, env.aws_seckey, bucket_name)
 
     # create data and upload it to the bucket service
-    indices = 0:1
+    indices = 0:9
     inouts = create_input_files(indices)
     map((inout) -> Bucket.upload(bucket, inout[1], inout[2]), inouts)
 
