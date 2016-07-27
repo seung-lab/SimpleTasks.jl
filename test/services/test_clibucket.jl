@@ -1,30 +1,34 @@
-module TestAWSCLIBucket
+module TestCLIBucket
 
 using Base.Test
-using Julitasks.Services.AWSCLIBucket
+using Julitasks.Services.CLIBucket
 
 import AWS
 import Julitasks.Services.Bucket
+import Julitasks.Services.CLIBucket
+import Julitasks.Services.AWSCLIProvider
+import Julitasks.Services.GCSCLIProvider
 
 const TEST_FILE_NAME = "testfile"
-const BUCKET_NAME = "seunglab-alignment"
+const BUCKET_NAME = "seunglab-test"
 const MAX_INDEX = 100000
 
 macro silent(expr::Expr)
     return :(try run(pipeline($expr, stdout=DevNull, stderr=DevNull)) catch end)
 end
 
-function upload_remote_test_file()
+function upload_remote_test_file(provider::CLIBucket.Provider)
     create_local_test_file(TEST_FILE_NAME)
     try
-        run(`aws s3 cp $TEST_FILE_NAME s3://$BUCKET_NAME/$TEST_FILE_NAME`)
+        run(`$(provider.command) cp $TEST_FILE_NAME
+            $(provider.prefix)/$BUCKET_NAME/$TEST_FILE_NAME`)
     finally
         delete_local_test_file()
     end
 end
 
-function delete_remote_test_file()
-    run(`aws s3 rm s3://$BUCKET_NAME/$TEST_FILE_NAME`)
+function delete_remote_test_file(provider::CLIBucket.Provider)
+    run(`$(provider.command) rm $(provider.prefix)/$BUCKET_NAME/$TEST_FILE_NAME`)
 end
 
 function write_numbers(io::IO)
@@ -43,25 +47,20 @@ function delete_local_test_file()
     rm(TEST_FILE_NAME)
 end
 
-function test_creatable()
-    env = AWS.AWSEnv()
-    bucket = AWSCLIBucketService(env.aws_id, env.aws_seckey,
-        BUCKET_NAME)
+function test_creatable(provider::CLIBucket.Provider)
+    bucket = CLIBucketService(provider, BUCKET_NAME)
     @test bucket != nothing
 end
 
-function test_bad_bucket()
-    env = AWS.AWSEnv()
-    @test_throws ArgumentError AWSCLIBucketService(env.aws_id, env.aws_seckey,
+function test_bad_bucket(provider::CLIBucket.Provider)
+    @test_throws ArgumentError CLIBucketService(provider,
         "$BUCKET_NAME-bad")
 end
 
-function test_download_IO()
-    upload_remote_test_file()
+function test_download_IO(provider::CLIBucket.Provider)
+    upload_remote_test_file(provider)
 
-    env = AWS.AWSEnv()
-    bucket = AWSCLIBucketService(env.aws_id, env.aws_seckey,
-        BUCKET_NAME)
+    bucket = CLIBucketService(provider, BUCKET_NAME)
 
     buffer = IOBuffer()
     Bucket.download(bucket, TEST_FILE_NAME, buffer)
@@ -73,15 +72,13 @@ function test_download_IO()
     # last split from \n is generates an empty string
     @test length(file_indices) - 1 == MAX_INDEX
 
-    delete_remote_test_file()
+    delete_remote_test_file(provider)
 end
 
-function test_download_file()
-    upload_remote_test_file()
+function test_download_file(provider::CLIBucket.Provider)
+    upload_remote_test_file(provider)
 
-    env = AWS.AWSEnv()
-    bucket = AWSCLIBucketService(env.aws_id, env.aws_seckey,
-        BUCKET_NAME)
+    bucket = CLIBucketService(provider, BUCKET_NAME)
 
     download_filename = "new$TEST_FILE_NAME"
     Bucket.download(bucket, TEST_FILE_NAME, download_filename)
@@ -99,15 +96,13 @@ function test_download_file()
     end
     @test index == MAX_INDEX
 
-    delete_remote_test_file()
+    delete_remote_test_file(provider)
 end
 
-function test_download_stream()
-    upload_remote_test_file()
+function test_download_stream(provider::CLIBucket.Provider)
+    upload_remote_test_file(provider)
 
-    env = AWS.AWSEnv()
-    bucket = AWSCLIBucketService(env.aws_id, env.aws_seckey,
-        BUCKET_NAME)
+    bucket = CLIBucketService(provider, BUCKET_NAME)
 
     stream = Bucket.download(bucket, TEST_FILE_NAME)
 
@@ -122,13 +117,11 @@ function test_download_stream()
     end
     @test index == MAX_INDEX
 
-    delete_remote_test_file()
+    delete_remote_test_file(provider)
 end
 
-function test_upload_io()
-    env = AWS.AWSEnv()
-    bucket = AWSCLIBucketService(env.aws_id, env.aws_seckey,
-        BUCKET_NAME)
+function test_upload_io(provider::CLIBucket.Provider)
+    bucket = CLIBucketService(provider, BUCKET_NAME)
 
     io = IOBuffer()
     write_numbers(io)
@@ -136,13 +129,13 @@ function test_upload_io()
     upload_filename = "$(TEST_FILE_NAME)UpIO"
 
     # try to remove the file we are tring to upload from bucket
-    @silent `aws s3 rm s3://$BUCKET_NAME/$upload_filename`
+    @silent `$(provider.command) rm $(provider.prefix)/$BUCKET_NAME/$upload_filename`
 
     Bucket.upload(bucket, io, upload_filename)
 
     # Verify the uploaded file by manually download the uploaded file
     try
-        run(`aws s3 cp s3://$BUCKET_NAME/$upload_filename $upload_filename`)
+        run(`$(provider.command) cp $(provider.prefix)/$BUCKET_NAME/$upload_filename $upload_filename`)
     catch
         error("Unable to find downloaded file $upload_filename")
     end
@@ -159,17 +152,15 @@ function test_upload_io()
         rm(upload_filename)
     end
     @test index == MAX_INDEX
-    @silent `aws s3 rm s3://$BUCKET_NAME/$upload_filename`
+    @silent `$(provider.command) rm $(provider.prefix)/$BUCKET_NAME/$upload_filename`
 end
 
-function test_upload_file()
-    env = AWS.AWSEnv()
-    bucket = AWSCLIBucketService(env.aws_id, env.aws_seckey,
-        BUCKET_NAME)
+function test_upload_file(provider::CLIBucket.Provider)
+    bucket = CLIBucketService(provider, BUCKET_NAME)
 
     upload_filename = "$(TEST_FILE_NAME)UpFile"
     # try to remove the file we are tring to upload from bucket
-    @silent `aws s3 rm s3://$BUCKET_NAME/$upload_filename`
+    @silent `$(provider.command) rm $(provider.prefix)/$BUCKET_NAME/$upload_filename`
 
     create_local_test_file(upload_filename)
 
@@ -177,7 +168,8 @@ function test_upload_file()
 
     # Verify the uploaded file by manually download the uploaded file
     try
-        run(`aws s3 cp s3://$BUCKET_NAME/$upload_filename $upload_filename`)
+        run(`$(provider.command) cp
+            $(provider.prefix)/$BUCKET_NAME/$upload_filename $upload_filename`)
     catch
         error("Unable to find downloaded file $upload_filename")
     end
@@ -194,19 +186,28 @@ function test_upload_file()
         rm(upload_filename)
     end
     @test index == MAX_INDEX
-    @silent `aws s3 rm s3://$BUCKET_NAME/$upload_filename`
+    @silent `$(provider.command) rm $(provider.prefix)/$BUCKET_NAME/$upload_filename`
+end
+
+function test_bucket(provider::CLIBucket.Provider)
+    test_creatable(provider)
+    test_bad_bucket(provider)
+
+    test_download_IO(provider)
+    test_download_file(provider)
+    test_download_stream(provider)
+
+    test_upload_io(provider)
+    test_upload_file(provider)
 end
 
 function __init__()
-    #=test_creatable()=#
-    #=test_bad_bucket()=#
+    env = AWS.AWSEnv()
+    aws_provider = AWSCLIProvider.Details(env)
+    test_bucket(aws_provider)
 
-    #=test_download_IO()=#
-    #=test_download_file()=#
-    #=test_download_stream()=#
-
-    test_upload_io()
-    test_upload_file()
+    gcs_provider = GCSCLIProvider.Details()
+    test_bucket(gcs_provider)
 end
 
-end # module TestAWSCLIBucket
+end # module TestCLIBucket

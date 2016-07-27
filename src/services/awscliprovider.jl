@@ -1,0 +1,37 @@
+module AWSCLIProvider
+
+using ...Julitasks.Types
+
+import AWS
+import Julitasks.Services.Bucket
+import Julitasks.Services.CLIBucket
+
+export Details
+
+const AWS_KEY_FILE = "$(homedir())/.aws/config"
+const AWS_PREFIX = `s3:/`
+const AWS_COMMAND = `aws s3`
+
+Details(env::AWS.AWSEnv) =
+    create_access!(env.aws_id, env.aws_seckey) && 
+    CLIBucket.Provider(AWS_PREFIX, AWS_COMMAND)
+
+Details(aws_access_key_id::AbstractString,
+    aws_secret_access_key::AbstractString) =
+    create_access!(aws_access_key_id, aws_secret_access_key) && 
+    CLIBucket.Provider(AWS_PREFIX, AWS_COMMAND)
+
+function create_access!(aws_access_key_id::AbstractString,
+        aws_secret_access_key::AbstractString)
+    if stat(AWS_KEY_FILE).size == 0
+        println("No access file found for aws cli, creating one!")
+        file = open(AWS_KEY_FILE, "w")
+        write(file, "[default]\n")
+        write(file, "aws_access_key_id = $(aws_access_key_id)\n")
+        write(file, "aws_secret_access_key = $(aws_secret_access_key)\n")
+        close(file)
+    end
+    return true
+end
+
+end # module AWSCLIProvider

@@ -1,49 +1,37 @@
-module AWSCLIBucket
+module CLIBucket
 
 using ...Julitasks.Types
 
-import AWS, AWS.S3
 import Julitasks.Services.Bucket
 
-export AWSCLIBucketService
+export CLIBucketService
 
-const AWS_KEY_FILE = "$(homedir())/.aws/config"
-
-type AWSCLIBucketService <: BucketService
-    name::ASCIIString
+type Provider
+    prefix::Cmd
+    command::Cmd
 end
 
-AWSCLIBucketService(aws_access_key_id::ASCIIString,
-    aws_secret_access_key::ASCIIString, name::ASCIIString) =
-    create_access!(aws_access_key_id, aws_secret_access_key) && 
-    check_reachable(name) && AWSCLIBucketService(name)
+type CLIBucketService <: BucketService
+    provider::Provider
+    name::AbstractString
 
-function create_access!(aws_access_key_id::ASCIIString,
-        aws_secret_access_key::ASCIIString)
-    if stat(AWS_KEY_FILE).size == 0
-        println("No access file found for aws cli, creating one!")
-        file = open(AWS_KEY_FILE, "w")
-        write(file, "[default]\n")
-        write(file, "aws_access_key_id = $(aws_access_key_id)\n")
-        write(file, "aws_secret_access_key = $(aws_secret_access_key)\n")
-        close(file)
-    end
-    return true
+    CLIBucketService(provider::Provider, name::AbstractString) =
+        check_reachable(provider, name) && new(provider, name)
 end
 
-function check_reachable(bucket_name::AbstractString)
+
+function check_reachable(provider::Provider, bucket_name::AbstractString)
     try
-        println("Checking access to $bucket_name")
-        # pipleine into DevNull to squelch stdout
-        run(pipeline(`aws s3 ls s3://$bucket_name`, stdout=DevNull,
-            stderr=DevNull))
+        # pipeline into DevNull to squelch stdout
+        cmd = `$(provider.command) ls $(provider.prefix)/$bucket_name`
+        run(pipeline(cmd, stdout=DevNull, stderr=DevNull))
     catch
         throw(ArgumentError("Unable to access bucket \"$bucket_name\"")) 
     end
     return true
 end
 
-function Bucket.download(bucket::AWSCLIBucketService,
+function Bucket.download(bucket::CLIBucketService,
     remote_file::AbstractString,
     local_file::Union{AbstractString, IO, Void}=nothing)
 
@@ -51,7 +39,8 @@ function Bucket.download(bucket::AWSCLIBucketService,
         local_file = open(local_file, "w")
     end
 
-    download_cmd = `aws s3 cp s3://$(bucket.name)/$remote_file -`
+    download_cmd = `$(bucket.provider.command) cp
+        $(bucket.provider.prefix)/$(bucket.name)/$remote_file -`
 
     if typeof(local_file) <: IOBuffer || local_file == nothing
         (s3_output, process) = open(download_cmd, "r")
@@ -81,14 +70,15 @@ function Bucket.download(bucket::AWSCLIBucketService,
     return local_file
 end
 
-function Bucket.upload(bucket::AWSCLIBucketService,
+function Bucket.upload(bucket::CLIBucketService,
         local_file::Union{AbstractString, IO}, remote_file::AbstractString)
 
     if isa(local_file, AbstractString)
         local_file = open(local_file, "r")
     end
 
-    upload_cmd = `aws s3 cp - s3://$(bucket.name)/$remote_file`
+    upload_cmd = `$(bucket.provider.command) cp -
+        $(bucket.provider.prefix)/$(bucket.name)/$remote_file`
 
     # ugh julia doesn't support piping directly to IOBuffers yet
     #=https://github.com/JuliaLang/julia/issues/14437=#
@@ -114,4 +104,4 @@ function Bucket.upload(bucket::AWSCLIBucketService,
 
 end
 
-end # module AWSCLIBucket
+end # module CLIBucket
