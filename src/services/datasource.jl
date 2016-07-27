@@ -29,7 +29,8 @@ function get{String <: AbstractString}(datasource::DatasourceService,
 end
 
 """
-    put!(datasource::DatasourceService, key::AbstractString)
+    put!(datasource::DatasourceService, key::AbstractString,
+        new_value::Union{IO, Void}=nothing; only_cache::Bool=false)
 
 Put in a new object from cache into remote, optionally put a new object into
 cache first.
@@ -40,8 +41,9 @@ function put!(datasource::DatasourceService, key::AbstractString,
 end
 
 """
-    put!{String <: AbstractString}(datasource::DatasourceService,
-        key::AbstractString)
+    put!{String <: AbstractString, I <: IO}(
+        datasource::DatasourceService, keys::Array{String, 1},
+        new_values::Array{I, 1}; only_cache::Bool=false)
 
 Put multiple outputs we have in cache to remote, optionally put a new object
 into cache first.

@@ -53,25 +53,32 @@ function Bucket.download(bucket::AWSCLIBucketService,
 
     download_cmd = `aws s3 cp s3://$(bucket.name)/$remote_file -`
 
-    if local_file == nothing
+    if typeof(local_file) <: IOBuffer || local_file == nothing
         (s3_output, process) = open(download_cmd, "r")
-        wait(process)
-        return s3_output
-    # ugh julia doesn't support piping directly to IOBuffers yet
-    #=https://github.com/JuliaLang/julia/issues/14437=#
-    elseif typeof(local_file) <: IOBuffer
-        (s3_output, process) = open(download_cmd, "r")
-        # manually read from stream and write to buffer
-        write(local_file, readbytes(s3_output))
-        return local_file
+
+        if typeof(local_file) <: IOBuffer
+            # ugh julia doesn't support piping directly to IOBuffers yet so we need
+            # manually read/write into the buffer, otherwise we can just use
+            # open(..,"w", local_file)
+            #=https://github.com/JuliaLang/julia/issues/14437=#
+            write(local_file, readbytes(s3_output))
+        else # local_file == nothing
+            local_file = s3_output
+        end
     else
-        # open the cmd in write mode. this automatically takes the 2nd arg
-        # (stdio) and uses it as redirection of STDOUT
         (s3_input, process) = open(download_cmd, "w", local_file)
         # for now just make it block until command has completed
         wait(process)
-        return local_file
     end
+
+
+    # Stop gap measure to check if we couldn't locate the file
+    timedwait(() -> process_exited(process), 1.0)
+    if !process_running(process) && !success(process)
+        error("Error downloading $remote_file using command $download_cmd")
+    end
+
+    return local_file
 end
 
 function Bucket.upload(bucket::AWSCLIBucketService,

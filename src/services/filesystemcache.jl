@@ -54,12 +54,21 @@ function Cache.put!(cache::FileSystemCacheService, key::AbstractString,
         write(filestream, readbytes(value_io))
         close(filestream)
     catch e
-        close(filestream)
-        # if there was an error in writing, we should delete the file so it
-        # doens't count as being cached
+        # if there was an error in reading/writing the stream, we should
+        # clear the file in case of transmission error
+        truncate(filestream, 0)
+        println(STDERR, "Clearing FSCache for $key in $filename due to " *
+            "stream error")
         showerror(STDERR, e, catch_backtrace(); backtrace = true)
+        # error is thrown later on because the file is empty
+    end
+
+    # if the outcome of the put resulted in an empty file, then remove it
+    # from the cache
+    close(filestream)
+    if Cache.exists(cache, key) && stat(filename).size == 0
         rm(filename)
-        error("Unable to put into cache $key")
+        error("Tried to cache an empty file $key into $filename")
     end
 end
 
