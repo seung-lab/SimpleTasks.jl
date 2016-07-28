@@ -4,7 +4,8 @@ module RunDaemon
 
 using Julitasks.Types
 using Julitasks.Services.AWSQueue
-using Julitasks.Services.AWSCLIBucket
+using Julitasks.Services.CLIBucket
+using Julitasks.Services.AWSCLIProvider
 using Julitasks.Services.FileSystemCache
 using Julitasks.Services.BucketCacheDatasource
 using Julitasks.Services.Daemon
@@ -29,7 +30,7 @@ function run(queue_name, bucket_name, cache_directory, poll_frequency_seconds)
 
     queue = AWSQueueService(env, queue_name)
 
-    bucket = AWSCLIBucketService(env.aws_id, env.aws_seckey, bucket_name)
+    bucket = CLIBucketService(AWSCLIProvider.Details(env), bucket_name)
 
     cache = FileSystemCacheService(cache_directory)
 

@@ -4,7 +4,8 @@ module AWSScheduler
 
 using Julitasks.Types
 using Julitasks.Services.AWSQueue
-using Julitasks.Services.AWSCLIBucket
+using Julitasks.Services.CLIBucket
+using Julitasks.Services.AWSCLIProvider
 using Julitasks.Examples.NoOpTask
 
 import AWS
@@ -67,7 +68,7 @@ end
 function schedule(queue_name, bucket_name)
     env = AWS.AWSEnv()
     queue = AWSQueueService(env, queue_name)
-    bucket = AWSCLIBucketService(env.aws_id, env.aws_seckey, bucket_name)
+    bucket = CLIBucketService(AWSCLIProvider.Details(env), bucket_name)
 
     # create data and upload it to the bucket service
     indices = 0:9
