@@ -14,7 +14,8 @@ using Julitasks.Examples.NoOpTask
 import AWS
 
 type RunConfig
-    queue_name::ASCIIString
+    task_queue_name::ASCIIString
+    error_queue_name::ASCIIString
     bucket_name::ASCIIString
     cache_directory::ASCIIString
     poll_frequency_seconds::Int64
@@ -23,12 +24,15 @@ end
 #=
  = Create the queue and bucket service and start the daemon
  =#
-function run(queue_name, bucket_name, cache_directory, poll_frequency_seconds)
+function run(task_queue_name, error_queue_name, bucket_name,
+        cache_directory, poll_frequency_seconds)
     # Load AWS credentials via AWS library (either through environment
     # variables or ~/.awssecret or query permissions server)
     env = AWS.AWSEnv()
 
-    queue = AWSQueueService(env, queue_name)
+    task_queue = AWSQueueService(env, task_queue_name)
+
+    error_queue = AWSQueueService(env, error_queue_name)
 
     bucket = CLIBucketService(AWSCLIProvider.Details(env), bucket_name)
 
@@ -36,7 +40,8 @@ function run(queue_name, bucket_name, cache_directory, poll_frequency_seconds)
 
     datasource = BucketCacheDatasourceService(bucket, cache)
 
-    daemon = DaemonService(queue, bucket, datasource, poll_frequency_seconds)
+    daemon = DaemonService(task_queue, error_queue, bucket, datasource,
+        poll_frequency_seconds)
 
     register!(daemon, NoOpTask.NAME, NoOpTaskDetails)
 
@@ -50,15 +55,16 @@ end
 function parse_args()
     if length(ARGS) < 3
         error("Not enough arguments given, (given $ARGS) sample usage:
-            -- julia daemon.jl queue_name bucket_name cache_directory
-            poll_frequency_seconds")
+            -- julia daemon.jl task_queue_name error_queue_name bucket_name " *
+            " cache_directory poll_frequency_seconds")
     end
 
     run_config = RunConfig(
         ASCIIString(ARGS[1]),
         ASCIIString(ARGS[2]),
         ASCIIString(ARGS[3]),
-        parse(Int64, ARGS[4])
+        ASCIIString(ARGS[4]),
+        parse(Int64, ARGS[5])
     )
     return run_config
 end
@@ -66,9 +72,11 @@ end
 #Run main!
 function __init__()
     #=run_config = parse_args()=#
-    run_config = RunConfig("test-queue2", "seunglab-test", "/var/tmp/", 5)
-    run(run_config.queue_name, run_config.bucket_name,
-        run_config.cache_directory, run_config.poll_frequency_seconds)
+    run_config = RunConfig("task-queue-TEST", "error-queue-TEST", "seunglab-test",
+        "/var/tmp/", 5)
+    run(run_config.task_queue_name, run_config.error_queue_name,
+        run_config.bucket_name, run_config.cache_directory,
+        run_config.poll_frequency_seconds)
 end
 
 end # end module RunDaemon

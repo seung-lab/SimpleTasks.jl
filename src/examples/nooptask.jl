@@ -70,7 +70,7 @@ end
 function DaemonTask.finalize(task::NoOpTaskDetails,
         datasource::DatasourceService, result::DaemonTask.Result)
     if !result.success
-        println("Task $(task.basicInfo.id), $(task.basicInfo.name) was " *
+        error("Task $(task.basicInfo.id), $(task.basicInfo.name) was " *
             "not successful")
     else
         println("Task $(task.basicInfo.id), $(task.basicInfo.name) was " *

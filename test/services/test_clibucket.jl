@@ -206,8 +206,8 @@ function __init__()
     aws_provider = AWSCLIProvider.Details(env)
     test_bucket(aws_provider)
 
-    gcs_provider = GCSCLIProvider.Details()
-    test_bucket(gcs_provider)
+    #=gcs_provider = GCSCLIProvider.Details()=#
+    #=test_bucket(gcs_provider)=#
 end
 
 end # module TestCLIBucket

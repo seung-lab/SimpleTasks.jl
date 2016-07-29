@@ -12,40 +12,77 @@ import JSON
 export DaemonService, register!, run
 
 type DaemonService
-    queue::QueueService
+    task_queue::QueueService
+    error_queue::QueueService
     bucket::BucketService
     datasource::DatasourceService
     poll_frequency_seconds::Int64
     tasks::Dict{AbstractString, Type}
 end
 
-DaemonService(queue::QueueService, bucket::BucketService,
-    datasource::DatasourceService, poll_frequency_seconds::Int64) = 
-        DaemonService(queue, bucket, datasource, poll_frequency_seconds,
-            Dict{AbstractString, Module}())
+type TaskExceptionReport
+    task_message::AbstractString
+    exception_message::AbstractString
+end
+
+DaemonService(task_queue::QueueService, error_queue::QueueService,
+    bucket::BucketService, datasource::DatasourceService,
+    poll_frequency_seconds::Int64) = 
+        DaemonService(task_queue, error_queue, bucket, datasource,
+            poll_frequency_seconds, Dict{AbstractString, Module}())
 
 function run(daemon::DaemonService)
     while true
+        message = ""
         try
-            message = Queue.pop_message(daemon.queue)
+            message = Queue.pop_message(daemon.task_queue)
 
             if isempty(message)
-                println("No messages found in $(Queue.string(daemon.queue))")
+                println("No messages found in", Queue.string(daemon.task_queue))
             else
                 println("Message received is $(message)")
 
-                task = parse(daemon, message)
+                try
+                    task = parse(daemon, message)
 
-                println("Task is $(task.basicInfo.id), $(task.basicInfo.name)")
+                    println("Task is $(task.basicInfo.id), ",
+                        task.basicInfo.name)
 
-                success = DaemonTask.run(task, daemon.datasource)
+                    success = DaemonTask.run(task, daemon.datasource)
+                catch task_exception
+                    exception_buffer = IOBuffer()
+                    showerror(exception_buffer, task_exception,
+                        catch_backtrace(); backtrace = true)
+                    seekstart(exception_buffer)
+                    notify_task_error(daemon.error_queue,
+                        TaskExceptionReport(message, readall(exception_buffer)))
+                    rethrow(task_exception)
+                end
             end
-        catch e
-            showerror(STDERR, e, catch_backtrace(); backtrace = true)
-            println(STDERR) #looks like showerror doesn't include a newline
+        catch exception
+            print(STDERR, "Daemon Exception: ")
+            showerror(STDERR, exception, catch_backtrace(); backtrace = true)
+            println(STDERR)
         end
 
+
         sleep(daemon.poll_frequency_seconds)
+    end
+end
+
+"""
+    notify_task_error(queue::QueueService, task_message::AbstractString,
+        exception::Exception)
+"""
+function notify_task_error(queue::QueueService,
+        error_report::TaskExceptionReport)
+    try
+        Queue.push_message(queue; message_body = JSON.json(error_report))
+    catch notify_exception
+        print(STDERR, "ERROR in notifying  error-queue ", Queue.string(queue),
+            " (Keep looking below for the real Daemon exception):")
+        showerror(STDERR, notify_exception, catch_backtrace(); backtrace = true)
+        println(STDERR)
     end
 end
 

@@ -82,7 +82,7 @@ function schedule(queue_name, bucket_name)
 end
 
 function __init__()
-    schedule("test-queue2", "seunglab-test")
+    schedule("task-queue-TEST", "seunglab-test")
 end
 
 end # module AWSScheduler
