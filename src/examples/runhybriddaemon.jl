@@ -1,11 +1,11 @@
 include("../Julitasks.jl")
 
-module RunDaemon
+module RunHybridDaemon
 
 using Julitasks.Types
 using Julitasks.Services.AWSQueue
 using Julitasks.Services.CLIBucket
-using Julitasks.Services.AWSCLIProvider
+using Julitasks.Services.GCSCLIProvider
 using Julitasks.Services.FileSystemCache
 using Julitasks.Services.BucketCacheDatasource
 using Julitasks.Services.Daemon
@@ -34,7 +34,7 @@ function run(task_queue_name, error_queue_name, bucket_name,
 
     error_queue = AWSQueueService(env, error_queue_name)
 
-    bucket = CLIBucketService(AWSCLIProvider.Details(env), bucket_name)
+    bucket = CLIBucketService(GCSCLIProvider.Details(), bucket_name)
 
     cache = FileSystemCacheService(cache_directory)
 
