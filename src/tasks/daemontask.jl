@@ -1,6 +1,6 @@
 module DaemonTask
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
 export Info, run
 

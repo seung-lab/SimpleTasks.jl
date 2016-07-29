@@ -1,12 +1,12 @@
 module TestDatasource
 
 using Base.Test
-using JulitasksTests.Utils.MockServices
-using Julitasks.Services.BucketCacheDatasource
+using SimpleTasksTests.Utils.MockServices
+using SimpleTasks.Services.BucketCacheDatasource
 
-import Julitasks.Services.Bucket
-import Julitasks.Services.Cache
-import Julitasks.Services.Datasource
+import SimpleTasks.Services.Bucket
+import SimpleTasks.Services.Cache
+import SimpleTasks.Services.Datasource
 
 function test_get_empty_cache()
     key = "somekey"

@@ -1,10 +1,10 @@
 module TestFileSystemCache
 
 using Base.Test
-using JulitasksTests.Utils.TestServices
+using SimpleTasksTests.Utils.TestServices
 
-import Julitasks.Services.Cache
-import Julitasks.Services.FileSystemCache
+import SimpleTasks.Services.Cache
+import SimpleTasks.Services.FileSystemCache
 
 function test_blank_directory()
     @test_throws ArgumentError FileSystemCache.FileSystemCacheService(" ")

@@ -1,11 +1,11 @@
 module TestDaemonTask
 
 using Base.Test
-using Julitasks.Types
-using JulitasksTests.Utils.MockServices
+using SimpleTasks.Types
+using SimpleTasksTests.Utils.MockServices
 
-import Julitasks.Tasks.DaemonTask
-import Julitasks.Tasks.DaemonTask
+import SimpleTasks.Tasks.DaemonTask
+import SimpleTasks.Tasks.DaemonTask
 
 type NewTask <: DaemonTaskDetails end
 function test_execute_undefined_task()

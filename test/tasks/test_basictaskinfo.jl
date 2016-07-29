@@ -1,9 +1,9 @@
 module TestBasicTaskInfo
 
 using Base.Test
-using JulitasksTests.Utils.TestTasks
+using SimpleTasksTests.Utils.TestTasks
 
-import Julitasks.Tasks.BasicTask
+import SimpleTasks.Tasks.BasicTask
 import JSON
 
 function test_basic_info_no_id()

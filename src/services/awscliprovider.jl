@@ -1,10 +1,10 @@
 module AWSCLIProvider
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
 import AWS
-import Julitasks.Services.Bucket
-import Julitasks.Services.CLIBucket
+import SimpleTasks.Services.Bucket
+import SimpleTasks.Services.CLIBucket
 
 export Details
 

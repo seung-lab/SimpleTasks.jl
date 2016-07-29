@@ -1,14 +1,14 @@
 module TestDaemonService
 
 using Base.Test
-using JulitasksTests.Utils.TestTasks
-using JulitasksTests.Utils.MockServices
-using Julitasks.Services.Daemon
+using SimpleTasksTests.Utils.TestTasks
+using SimpleTasksTests.Utils.MockServices
+using SimpleTasks.Services.Daemon
 
-import Julitasks.Services.Queue
-import Julitasks.Services.Bucket
-import Julitasks.Services.Datasource
-import Julitasks.Tasks.DaemonTask
+import SimpleTasks.Services.Queue
+import SimpleTasks.Services.Bucket
+import SimpleTasks.Services.Datasource
+import SimpleTasks.Tasks.DaemonTask
 import JSON
 
 function test_register_no_execute_method()

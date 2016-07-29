@@ -1,12 +1,12 @@
 module MockServices
 
-using Julitasks.Types
-using JulitasksTests.Utils.TestTasks
+using SimpleTasks.Types
+using SimpleTasksTests.Utils.TestTasks
 
-import Julitasks.Services.Queue
-import Julitasks.Services.Bucket
-import Julitasks.Services.Cache
-import Julitasks.Services.Datasource
+import SimpleTasks.Services.Queue
+import SimpleTasks.Services.Bucket
+import SimpleTasks.Services.Cache
+import SimpleTasks.Services.Datasource
 
 export MockBucketService
 type MockBucketService <: BucketService

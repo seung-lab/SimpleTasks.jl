@@ -1,13 +1,13 @@
 module TestNoOpTask
 
 using Base.Test
-using JulitasksTests.Utils.TestTasks
-using JulitasksTests.Utils.MockServices
-using Julitasks.Examples.NoOpTask
+using SimpleTasksTests.Utils.TestTasks
+using SimpleTasksTests.Utils.MockServices
+using SimpleTasks.Examples.NoOpTask
 
-import Julitasks.Tasks.DaemonTask
-import Julitasks.Tasks.BasicTask
-import Julitasks.Services.Datasource
+import SimpleTasks.Tasks.DaemonTask
+import SimpleTasks.Tasks.BasicTask
+import SimpleTasks.Services.Datasource
 
 function test_create()
     task = NoOpTaskDetails(make_valid_basic_info(), "TEST")

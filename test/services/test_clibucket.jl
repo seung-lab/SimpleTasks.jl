@@ -1,13 +1,13 @@
 module TestCLIBucket
 
 using Base.Test
-using Julitasks.Services.CLIBucket
+using SimpleTasks.Services.CLIBucket
 
 import AWS
-import Julitasks.Services.Bucket
-import Julitasks.Services.CLIBucket
-import Julitasks.Services.AWSCLIProvider
-import Julitasks.Services.GCSCLIProvider
+import SimpleTasks.Services.Bucket
+import SimpleTasks.Services.CLIBucket
+import SimpleTasks.Services.AWSCLIProvider
+import SimpleTasks.Services.GCSCLIProvider
 
 const TEST_FILE_NAME = "testfile"
 const BUCKET_NAME = "seunglab-test"

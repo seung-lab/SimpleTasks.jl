@@ -1,10 +1,10 @@
 module BucketCacheDatasource
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
-import Julitasks.Services.Bucket
-import Julitasks.Services.Cache
-import Julitasks.Services.Datasource
+import SimpleTasks.Services.Bucket
+import SimpleTasks.Services.Cache
+import SimpleTasks.Services.Datasource
 
 export BucketCacheDatasourceService
 

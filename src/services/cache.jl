@@ -1,6 +1,6 @@
 module Cache
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
 export Service, exists, put!, get, delete!
 

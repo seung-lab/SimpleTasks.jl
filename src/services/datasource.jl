@@ -1,6 +1,6 @@
 module Datasource
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
 export get, put
 

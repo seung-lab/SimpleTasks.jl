@@ -1,9 +1,9 @@
 module FileSystemCache
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
-import Julitasks.Services.Bucket
-import Julitasks.Services.Cache
+import SimpleTasks.Services.Bucket
+import SimpleTasks.Services.Cache
 
 export FileSystemCacheService
 

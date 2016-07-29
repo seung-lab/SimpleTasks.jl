@@ -1,10 +1,10 @@
 module TestTasks
 
-using Julitasks.Types
+using SimpleTasks.Types
 
-import Julitasks.Tasks.DaemonTask
-import Julitasks.Tasks.BasicTask
-import Julitasks.Services.Datasource
+import SimpleTasks.Tasks.DaemonTask
+import SimpleTasks.Tasks.BasicTask
+import SimpleTasks.Services.Datasource
 
 export TEST_ID, TEST_TASK_NAME, TEST_BASE_DIRECTORY, TEST_INPUTS
 export make_valid_basic_info

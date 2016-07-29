@@ -1,8 +1,8 @@
 module CLIBucket
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
-import Julitasks.Services.Bucket
+import SimpleTasks.Services.Bucket
 
 export CLIBucketService
 

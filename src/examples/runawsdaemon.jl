@@ -1,15 +1,15 @@
-include("../Julitasks.jl")
+include("../SimpleTasks.jl")
 
 module RunAWSDaemon
 
-using Julitasks.Types
-using Julitasks.Services.AWSQueue
-using Julitasks.Services.CLIBucket
-using Julitasks.Services.AWSCLIProvider
-using Julitasks.Services.FileSystemCache
-using Julitasks.Services.BucketCacheDatasource
-using Julitasks.Services.Daemon
-using Julitasks.Examples.NoOpTask
+using SimpleTasks.Types
+using SimpleTasks.Services.AWSQueue
+using SimpleTasks.Services.CLIBucket
+using SimpleTasks.Services.AWSCLIProvider
+using SimpleTasks.Services.FileSystemCache
+using SimpleTasks.Services.BucketCacheDatasource
+using SimpleTasks.Services.Daemon
+using SimpleTasks.Examples.NoOpTask
 
 import AWS
 

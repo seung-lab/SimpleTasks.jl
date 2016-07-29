@@ -1,12 +1,12 @@
 module Daemon
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
-import Julitasks.Services.Queue
-import Julitasks.Services.Bucket
-import Julitasks.Services.Datasource
-import Julitasks.Tasks.DaemonTask
-import Julitasks.Tasks.BasicTask
+import SimpleTasks.Services.Queue
+import SimpleTasks.Services.Bucket
+import SimpleTasks.Services.Datasource
+import SimpleTasks.Tasks.DaemonTask
+import SimpleTasks.Tasks.BasicTask
 import JSON
 
 export DaemonService, register!, run

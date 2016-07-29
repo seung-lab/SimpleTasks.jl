@@ -1,18 +1,18 @@
-include("../Julitasks.jl")
+include("../SimpleTasks.jl")
 
 module AWSGCSScheduler
 
-using Julitasks.Types
-using Julitasks.Services.AWSQueue
-using Julitasks.Services.CLIBucket
-using Julitasks.Services.GCSCLIProvider
-using Julitasks.Examples.NoOpTask
+using SimpleTasks.Types
+using SimpleTasks.Services.AWSQueue
+using SimpleTasks.Services.CLIBucket
+using SimpleTasks.Services.GCSCLIProvider
+using SimpleTasks.Examples.NoOpTask
 
 import AWS
 import JSON
-import Julitasks.Services.Bucket
-import Julitasks.Services.Queue
-import Julitasks.Tasks.BasicTask
+import SimpleTasks.Services.Bucket
+import SimpleTasks.Services.Queue
+import SimpleTasks.Tasks.BasicTask
 
 const LOCAL_PREFIX = "/var/tmp"
 const BASE_DIRECTORY = "datasets/noop_dataset"

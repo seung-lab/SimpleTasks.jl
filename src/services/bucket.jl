@@ -1,6 +1,6 @@
 module Bucket
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
 export download, upload
 

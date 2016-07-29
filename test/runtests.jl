@@ -1,4 +1,4 @@
-using Julitasks
+using SimpleTasks
 using Base.Test
 
-include("JulitaskTests.jl")
+include("SimpleTasksTests.jl")

@@ -6,11 +6,11 @@ This module includes the composite type NoOpDetails which includes both the
 """
 module NoOpTask
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
-import Julitasks.Tasks.DaemonTask
-import Julitasks.Tasks.BasicTask
-import Julitasks.Services.Datasource
+import SimpleTasks.Tasks.DaemonTask
+import SimpleTasks.Tasks.BasicTask
+import SimpleTasks.Services.Datasource
 
 export NoOpTaskDetails, NAME, execute, full_input_path, full_output_path
 

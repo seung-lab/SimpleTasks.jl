@@ -1,9 +1,9 @@
 module AWSQueue
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
 import AWS, AWS.SQS
-import Julitasks.Services.Queue
+import SimpleTasks.Services.Queue
 
 export AWSQueueService
 

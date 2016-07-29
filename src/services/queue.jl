@@ -1,6 +1,6 @@
 module Queue
 
-using ...Julitasks.Types
+using ...SimpleTasks.Types
 
 export pop_message
 
