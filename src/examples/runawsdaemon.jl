@@ -71,9 +71,11 @@ end
 
 #Run main!
 function __init__()
-    #=run_config = parse_args()=#
-    run_config = RunConfig("task-queue-TEST", "error-queue-TEST", "seunglab-test",
-        "/var/tmp/", 5)
+    run_config = parse_args()
+    #=
+     =run_config = RunConfig("task-queue-TEST", "error-queue-TEST", "seunglab-test",
+     =    "/var/tmp/", 5)
+     =#
     run(run_config.task_queue_name, run_config.error_queue_name,
         run_config.bucket_name, run_config.cache_directory,
         run_config.poll_frequency_seconds)
