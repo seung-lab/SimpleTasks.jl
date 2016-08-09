@@ -8,8 +8,9 @@ julia:
   - 0.4.6
 notifications:
   email: false
-install:
-  - sudo pip install awscli
+before_install:
+  - pip install --user awscli
+  - export PATH=$PATH:$HOME/.local/bin
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone(pwd()); Pkg.build("SimpleTasks"); Pkg.test("SimpleTasks"; coverage=true)'
