@@ -40,7 +40,7 @@ function Bucket.download(bucket::CLIBucketService,
     local_file::Union{AbstractString, IO, Void}=nothing)
 
     download_cmd = `$(bucket.provider.command) cp
-        $(bucket.provider.prefix)/$(bucket.name)/$remote_file -`
+        "$(bucket.provider.prefix)/$(bucket.name)/$remote_file" -`
 
     s3_output = Pipe()
     # open the cmd in write mode. this automatically takes the 2nd arg
@@ -75,7 +75,7 @@ function Bucket.upload(bucket::CLIBucketService,
         local_file::Union{AbstractString, IO}, remote_file::AbstractString)
 
     upload_cmd = `$(bucket.provider.command) cp -
-        $(bucket.provider.prefix)/$(bucket.name)/$remote_file`
+        "$(bucket.provider.prefix)/$(bucket.name)/$remote_file"`
 
     s3_input = Pipe()
     # open the cmd in read mode. this automatically takes the 2nd arg

@@ -126,7 +126,8 @@ function test_upload_io(provider::CLIBucket.Provider)
     io = IOBuffer()
     write_numbers(io)
     seekstart(io)
-    upload_filename = "$(TEST_FILE_NAME)UpIO"
+    # also tests parentheses commas and underscores
+    upload_filename = "$(TEST_FILE_NAME)UpIO(,_)"
 
     # try to remove the file we are tring to upload from bucket
     @silent `$(provider.command) rm $(provider.prefix)/$BUCKET_NAME/$upload_filename`
