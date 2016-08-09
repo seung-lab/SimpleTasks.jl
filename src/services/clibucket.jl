@@ -28,7 +28,7 @@ function check_reachable(provider::Provider, bucket_name::AbstractString)
     try
         # pipeline into DevNull to squelch stdout
         cmd = `$(provider.command) ls $(provider.prefix)/$bucket_name`
-        run(pipeline(cmd, stdout=DevNull, stderr=DevNull))
+        run(pipeline(cmd, stdout=DevNull))
     catch
         throw(ArgumentError("Unable to access bucket \"$bucket_name\"")) 
     end
