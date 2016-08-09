@@ -9,7 +9,7 @@ julia:
 notifications:
   email: false
 install:
-  - pip install awscli
+  - pip install awscli --ignore-installed six
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone(pwd()); Pkg.build("SimpleTasks"); Pkg.test("SimpleTasks"; coverage=true)'
