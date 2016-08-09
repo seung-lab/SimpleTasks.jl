@@ -8,7 +8,8 @@ import SimpleTasks.Services.CLIBucket
 
 export Details
 
-const AWS_KEY_FILE = "$(homedir())/.aws/config"
+const AWS_KEY_PATH = "$(homedir())/.aws/"
+const AWS_KEY_FILE = "$AWS_KEY_PATH/config"
 const AWS_PREFIX = `s3:/`
 const AWS_COMMAND = `aws s3`
 
@@ -24,6 +25,7 @@ Details(aws_access_key_id::AbstractString,
 function create_access!(aws_access_key_id::AbstractString,
         aws_secret_access_key::AbstractString)
     if stat(AWS_KEY_FILE).size == 0
+        mkpath(AWS_KEY_PATH)
         println("No access file found for aws cli, creating one!")
         file = open(AWS_KEY_FILE, "w")
         write(file, "[default]\n")
