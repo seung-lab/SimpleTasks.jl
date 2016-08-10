@@ -25,12 +25,13 @@ const read_bytes = 50 * megabyte
 
 
 function check_reachable(provider::Provider, bucket_name::AbstractString)
+    ls_cmd = `$(provider.command) ls $(provider.prefix)/$bucket_name`
     try
         # pipeline into DevNull to squelch stdout
-        cmd = `$(provider.command) ls $(provider.prefix)/$bucket_name`
-        run(pipeline(cmd, stdout=DevNull))
+        run(pipeline(ls_cmd, stdout=DevNull))
     catch
-        throw(ArgumentError("Unable to access bucket \"$bucket_name\"")) 
+        throw(ArgumentError("Unable to access bucket \"$bucket_name\" " *
+            "with $ls_cmd")) 
     end
     return true
 end
@@ -101,6 +102,20 @@ function Bucket.upload(bucket::CLIBucketService,
     if !success(process)
         error("Upload did not complete cleanly")
     end
+end
+
+function Bucket.delete(bucket::CLIBucketService,
+    remote_file::AbstractString)
+    remove_cmd = `$(bucket.provider.command) rm
+        "$(bucket.provider.prefix)/$(bucket.name)/$remote_file"`
+    try
+        # pipeline into DevNull to squelch stdout
+        run(remove_cmd)
+    catch
+        throw(ArgumentError("Unable to delete $remote_file from bucket " *
+            "\"$(bucket.name)\" with command $remove_cmd")) 
+    end
+    return true
 end
 
 end # module CLIBucket

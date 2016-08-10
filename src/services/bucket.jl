@@ -27,4 +27,13 @@ function upload(bucket::BucketService, local_file::Union{AbstractString, IO},
     error("upload with $bucket is not implemented")
 end
 
+"""
+    delete(bucket::BucketService, remote_file::AbstractString)
+
+Delete the remote file from bucket
+"""
+function delete(bucket::BucketService, remote_file::AbstractString)
+    error("delete with $bucket is not implemented")
+end
+
 end # module Bucket

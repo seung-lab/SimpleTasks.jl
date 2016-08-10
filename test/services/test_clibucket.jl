@@ -190,6 +190,28 @@ function test_upload_file(provider::CLIBucket.Provider)
     @silent `$(provider.command) rm $(provider.prefix)/$BUCKET_NAME/$upload_filename`
 end
 
+function test_delete_file_exists(provider::CLIBucket.Provider)
+    upload_remote_test_file(provider)
+
+    bucket = CLIBucketService(provider, BUCKET_NAME)
+    Bucket.delete(bucket, TEST_FILE_NAME)
+
+    # Verify that the remote file was deleted
+    try
+        @test_throws ErrorException run(`$(provider.command) ls
+                $(provider.prefix)/$BUCKET_NAME/$TEST_FILE_NAME`)
+    finally
+        # Remove the test file if we had been unable to remove the file
+        @silent `$(provider.command) rm $(provider.prefix)/$BUCKET_NAME/$TEST_FILE_NAME`
+    end
+end
+
+function test_delete_file_not_exists(provider::CLIBucket.Provider)
+    bucket = CLIBucketService(provider, BUCKET_NAME)
+    # Verify that we throw an exception if the file doesn't exist
+    @test_throws ArgumentError Bucket.delete(bucket, TEST_FILE_NAME)
+end
+
 function test_bucket(provider::CLIBucket.Provider)
     test_creatable(provider)
     test_bad_bucket(provider)
@@ -200,6 +222,9 @@ function test_bucket(provider::CLIBucket.Provider)
 
     test_upload_io(provider)
     test_upload_file(provider)
+
+    test_delete_file_exists(provider)
+    test_delete_file_not_exists(provider)
 end
 
 function __init__()
