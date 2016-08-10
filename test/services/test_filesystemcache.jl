@@ -98,23 +98,23 @@ function test_get_not_exists()
     @test buffer == nothing
 end
 
-function test_delete()
+function test_remove()
     filename = "key"
     test_string = "TEST"
     buffer = IOBuffer(test_string)
     cache = make_valid_file_system_cache()
     Cache.put!(cache, filename, buffer)
-    Cache.delete!(cache, filename)
+    Cache.remove!(cache, filename)
     @test !isfile("$TEST_BASE_DIRECTORY/$filename")
 end
 
-function test_delete_path()
+function test_remove_path()
     filename = "a/b/c/key"
     test_string = "TEST"
     buffer = IOBuffer(test_string)
     cache = make_valid_file_system_cache()
     Cache.put!(cache, filename, buffer)
-    Cache.delete!(cache, filename)
+    Cache.remove!(cache, filename)
 end
 
 function __init__()
@@ -134,8 +134,8 @@ function __init__()
     test_get()
     test_get_not_exists()
 
-    test_delete()
-    test_delete_path()
+    test_remove()
+    test_remove_path()
 end
 
 end # module TestFileSystemCache

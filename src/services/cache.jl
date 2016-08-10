@@ -32,8 +32,13 @@ function get(cache::CacheService, key::AbstractString)
     error("get is unimplemented for $cache")
 end
 
-function delete!(cache::CacheService, key::AbstractString)
-    error("delete! is unimplemented for $cache")
+"""
+    remove!(cache::CacheService, key::AbstractString)
+
+Remove the cached value for the given key
+"""
+function remove!(cache::CacheService, key::AbstractString)
+    error("remove! is unimplemented for $cache")
 end
 
 end #module Cache

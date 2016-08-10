@@ -66,8 +66,8 @@ function Cache.get(cache::MockCacheService, key::AbstractString)
         return nothing
     end
 end
-function Cache.delete!(cache::MockCacheService, key::AbstractString)
-    delete!(cache.mockValues, key)
+function Cache.remove!(cache::MockCacheService, key::AbstractString)
+    remove!(cache.mockValues, key)
 end
 
 export MockDatasourceService

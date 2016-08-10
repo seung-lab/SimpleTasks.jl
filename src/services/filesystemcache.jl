@@ -80,7 +80,7 @@ function Cache.get(cache::FileSystemCacheService, key::AbstractString)
     end
 end
 
-function Cache.delete!(cache::FileSystemCacheService, key::AbstractString)
+function Cache.remove!(cache::FileSystemCacheService, key::AbstractString)
     rm(to_filename(cache, key))
 end
 
