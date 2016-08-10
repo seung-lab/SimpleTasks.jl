@@ -36,6 +36,11 @@ function Bucket.upload(bucket::MockBucketService,
     bucket.mockFiles[key] = data
 end
 
+function Bucket.delete(bucket::MockBucketService, key::AbstractString)
+    delete!(bucket.mockFiles, key)
+end
+
+
 export MockQueueService
 type MockQueueService <: QueueService
 end
@@ -67,7 +72,10 @@ function Cache.get(cache::MockCacheService, key::AbstractString)
     end
 end
 function Cache.remove!(cache::MockCacheService, key::AbstractString)
-    remove!(cache.mockValues, key)
+    delete!(cache.mockValues, key)
+end
+function Cache.clear!(cache::MockCacheService)
+    empty!(cache.mockValues)
 end
 
 export MockDatasourceService
@@ -93,6 +101,8 @@ function Datasource.put!(datasource::MockDatasourceService, key::AbstractString,
         seekstart(data)
         datasource.mockSource[key] = data
     end
+end
+function Datasource.clear_cache(datasource::MockDatasourceService)
 end
 
 end # module MockServices

@@ -42,4 +42,17 @@ function Datasource.put!(datasource::BucketCacheDatasourceService,
     return true
 end
 
+function Datasource.remove!(datasource::BucketCacheDatasourceService,
+        key::AbstractString; only_cache::Bool=false)
+    if !only_cache
+        Bucket.delete(datasource.remote, key)
+    end
+
+    Cache.remove!(datasource.cache, key)
+end
+
+function Datasource.clear_cache(datasource::BucketCacheDatasourceService)
+    Cache.clear!(datasource.cache)
+end
+
 end # module BucketCacheDatasource
