@@ -84,4 +84,11 @@ function Cache.remove!(cache::FileSystemCacheService, key::AbstractString)
     rm(to_filename(cache, key))
 end
 
+function Cache.clear!(cache::FileSystemCacheService)
+    contents = readdir(cache.baseDirectory)
+    for content in contents
+        rm(to_filename(cache, content); recursive=true)
+    end
+end
+
 end # module FileSystemCache

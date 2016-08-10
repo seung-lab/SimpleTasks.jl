@@ -117,6 +117,24 @@ function test_remove_path()
     Cache.remove!(cache, filename)
 end
 
+function test_clear()
+    cache = make_valid_file_system_cache()
+
+    filename1 = "a/b/c/key1"
+    test_string1 = "TEST1"
+    buffer1 = IOBuffer(test_string1)
+
+    filename2 = "a/b/c/key2"
+    test_string2 = "TEST2"
+    buffer2 = IOBuffer(test_string2)
+
+    Cache.put!(cache, filename1, buffer1)
+    Cache.put!(cache, filename2, buffer2)
+    Cache.clear!(cache)
+
+    @test isempty(readdir(cache.baseDirectory))
+end
+
 function __init__()
     test_blank_directory()
     test_good_cache()
@@ -136,6 +154,8 @@ function __init__()
 
     test_remove()
     test_remove_path()
+
+    test_clear()
 end
 
 end # module TestFileSystemCache
