@@ -36,8 +36,10 @@ end
 
 Put in a new value into the datasource for the given key. The new value can be
 specified by the input IO or if no IO is specified, it will be pulled from the
-cache. Optionally allow putting the new value to the cache only (when the new
-input value is IO)
+cache. Optionally allow putting the new value into the cache only.
+
+NOTE: The operation is undefined if only_cache = true and input new_value IO is
+not specified.
 """
 function put!(datasource::DatasourceService, key::AbstractString,
         new_value::Union{IO, Void}=nothing; only_cache::Bool=false)
@@ -51,12 +53,14 @@ end
 
 Put in new values into the datasource for the given keys. The new value can be
 specified by the input IO or if no IO is specified, it will be pulled from the
-cache. Optionally allow putting the new value to the cache only (when the new
-input value is IO)
+cache. Optionally allow putting the new value into the cache only.
+
+NOTE: The operation is undefined if only_cache = false and input new_value IO is
+not specified.
 """
 # Using parametrics because as of 0.4.6 can not promote Array{ASCIIString, 1}
 # to Array{AbstractString, 1}
-function put!{String <: AbstractString, I <: IO}(
+function put!{String <: AbstractString, I <: Union{IO, Void}}(
         datasource::DatasourceService, keys::Array{String, 1},
         new_values::Array{I, 1}; only_cache::Bool=false)
     return map((index) -> Datasource.put!(datasource, keys[index],

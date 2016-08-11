@@ -78,6 +78,7 @@ function Cache.clear!(cache::MockCacheService)
     empty!(cache.mockValues)
 end
 
+#This mock datasource has no cache!
 export MockDatasourceService
 type MockDatasourceService <: DatasourceService
     mockSource::Dict{AbstractString, IO}
@@ -102,6 +103,11 @@ function Datasource.put!(datasource::MockDatasourceService, key::AbstractString,
         datasource.mockSource[key] = data
     end
 end
+function Datasource.remove!(datasource::MockDatasourceService,
+    key::AbstractString; only_cache::Bool=false)
+    delete!(datasource.mockSource, key)
+end
+
 function Datasource.clear_cache(datasource::MockDatasourceService)
 end
 
