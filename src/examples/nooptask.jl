@@ -12,7 +12,7 @@ import SimpleTasks.Tasks.DaemonTask
 import SimpleTasks.Tasks.BasicTask
 import SimpleTasks.Services.Datasource
 
-export NoOpTaskDetails, NAME, execute, full_output_path
+export NoOpTaskDetails, NAME, full_output_path
 
 type NoOpTaskDetails <: DaemonTaskDetails
     basicInfo::BasicTask.Info

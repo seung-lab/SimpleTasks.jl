@@ -20,9 +20,16 @@ function can_execute(task_type::Type)
         return false
     end
 
-    execute_methods = methods(execute, Any[task_type, DatasourceService])
-
+    prepare_methods = methods(prepare, Type[task_type, DatasourceService])
+    if length(prepare_methods) == 0
+        return false
+    end
+    execute_methods = methods(execute, Type[task_type, DatasourceService])
     if length(execute_methods) == 0
+        return false
+    end
+    finalize_methods = methods(finalize, Type[task_type, DatasourceService])
+    if length(finalize_methods) == 0
         return false
     end
     for execute_method in execute_methods
