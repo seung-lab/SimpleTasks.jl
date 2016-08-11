@@ -14,8 +14,13 @@ import SimpleTasks.Services.Bucket
 import SimpleTasks.Services.Queue
 import SimpleTasks.Tasks.BasicTask
 
-const LOCAL_PREFIX = "/var/tmp"
+const LOCAL_PREFIX = "/var/tmp/daemontask"
 const BASE_DIRECTORY = "datasets/noop_dataset"
+
+type ScheduleConfig
+    task_queue_name::ASCIIString
+    bucket_name::ASCIIString
+end
 
 const KEY_FOLDER = "0_input"
 # datasets/noop_dataset/0_input
@@ -81,8 +86,28 @@ function schedule(queue_name, bucket_name)
         tasks)
 end
 
+"""
+    parse_args()
+Parse ARGS into scheduler configuration.
+Return ScheduleConfig
+"""
+function parse_args()
+    if length(ARGS) < 2
+        error("Not enough arguments given, (given $ARGS) sample usage:
+            -- julia hybridscheduler.jl task_queue_name bucket_name")
+    end
+
+    schedule_config = ScheduleConfig(
+        ASCIIString(ARGS[1]),
+        ASCIIString(ARGS[2])
+    )
+    return schedule_config
+end
+
 function __init__()
-    schedule("task-queue-TEST", "seunglab-test")
+    schedule_config = parse_args()
+    #=schedule_config = ScheduleConfig("task-queue-TEST", "seunglab-test")=#
+    schedule(schedule_config.task_queue_name, schedule_config.bucket_name)
 end
 
 end # module AWSScheduler

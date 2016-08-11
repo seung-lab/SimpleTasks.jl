@@ -53,7 +53,7 @@ end
  =Return RunConfig
  =#
 function parse_args()
-    if length(ARGS) < 3
+    if length(ARGS) < 5
         error("Not enough arguments given, (given $ARGS) sample usage:
             -- julia daemon.jl task_queue_name error_queue_name bucket_name " *
             " cache_directory poll_frequency_seconds")
@@ -74,7 +74,7 @@ function __init__()
     run_config = parse_args()
     #=
      =run_config = RunConfig("task-queue-TEST", "error-queue-TEST", "seunglab-test",
-     =    "/var/tmp/", 5)
+     =    "/var/tmp/taskdaemon", 5)
      =#
     run(run_config.task_queue_name, run_config.error_queue_name,
         run_config.bucket_name, run_config.cache_directory,

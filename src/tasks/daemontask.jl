@@ -2,7 +2,7 @@ module DaemonTask
 
 using ...SimpleTasks.Types
 
-export Info, run
+export Info, run, make_key
 
 """
     DaemonTask.Result
@@ -32,6 +32,16 @@ function can_execute(task_type::Type)
         end
     end
     return false
+end
+
+"""
+    make_key(task::DaemonTaskDetails, input::AbstractString)
+
+Get the fully qualified input key which is the input appended to the
+baseDirectory of the task
+"""
+function make_key(task::DaemonTaskDetails, input::AbstractString)
+    return "$(task.basicInfo.baseDirectory)/$input"
 end
 
 """

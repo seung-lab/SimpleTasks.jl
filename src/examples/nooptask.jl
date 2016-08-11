@@ -12,7 +12,7 @@ import SimpleTasks.Tasks.DaemonTask
 import SimpleTasks.Tasks.BasicTask
 import SimpleTasks.Services.Datasource
 
-export NoOpTaskDetails, NAME, execute, full_input_path, full_output_path
+export NoOpTaskDetails, NAME, execute, full_output_path
 
 type NoOpTaskDetails <: DaemonTaskDetails
     basicInfo::BasicTask.Info
@@ -21,11 +21,6 @@ end
 
 const NAME = "NO_OP"
 const OUTPUT_FOLDER = "0_output"
-
-function full_input_path(task::NoOpTaskDetails,
-        input::AbstractString)
-    return "$(task.basicInfo.baseDirectory)/$input"
-end
 
 function full_output_path(task::NoOpTaskDetails,
         input::AbstractString)
@@ -37,8 +32,9 @@ end
 
 function DaemonTask.prepare(task::NoOpTaskDetails,
         datasource::DatasourceService)
+    # Prime the cache
     Datasource.get(datasource,
-        map((input) -> full_input_path(task, input), task.basicInfo.inputs))
+        map((input) -> DaemonTask.make_key(task, input), task.basicInfo.inputs))
 end
 
 function DaemonTask.execute(task::NoOpTaskDetails,
@@ -49,8 +45,10 @@ function DaemonTask.execute(task::NoOpTaskDetails,
         return DaemonTask.Result(true, [])
     end
 
+    # Arbitrarily print out some of the first and last characters of the input
     for input in inputs
-        data_stream = Datasource.get(datasource, full_input_path(task, input))
+        data_stream = Datasource.get(datasource,
+            DaemonTask.make_key(task, input))
         if data_stream != nothing
             data = readall(data_stream)
             println("Input: $input contains $(data[1:min(10, end)]) \nto\n" *
@@ -61,7 +59,7 @@ function DaemonTask.execute(task::NoOpTaskDetails,
     # setting new values into the cache
     output_keys = map((input) -> full_output_path(task, input), inputs);
     output_streams = map((input) ->
-        Datasource.get(datasource, full_input_path(task, input)), inputs)
+        Datasource.get(datasource, DaemonTask.make_key(task, input)), inputs)
     Datasource.put!(datasource, output_keys, output_streams; only_cache = true)
 
     return DaemonTask.Result(true, output_keys)
@@ -78,6 +76,14 @@ function DaemonTask.finalize(task::NoOpTaskDetails,
         Datasource.put!(datasource,
             map((output) -> full_output_path(task, output), result.outputs))
     end
+
+    # Arbitrarily delete the first input file from the cache
+    if !isempty(task.basicInfo.inputs)
+        Datasource.remove!(datasource,
+            DaemonTask.make_key(task, task.basicInfo.inputs[1]);
+                only_cache=true)
+    end
+
 end
 
 end # module BlockMatchTask
