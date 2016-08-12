@@ -9,10 +9,10 @@ Type contains basic information for a daemon task
 
 """
 type Info
-    id::Int64
-    name::AbstractString
-    baseDirectory::AbstractString
-    inputs::Array{AbstractString, 1}
+    id::Int64                           # Numerical identifier for specific task
+    name::AbstractString                # String identifer for the type of task
+    baseDirectory::AbstractString       # Base directory for fetching input data
+    inputs::Array{AbstractString, 1}    # Names of files we are fetching
 end
 
 function Info{String <: AbstractString}(dict::Dict{String, Any})
