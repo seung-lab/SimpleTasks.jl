@@ -30,19 +30,22 @@ function run(task_queue_name, error_queue_name, bucket_name,
     # variables or ~/.awssecret or query permissions server)
     env = AWS.AWSEnv()
 
+    # Create a queue to read tasks from
     task_queue = AWSQueueService(env, task_queue_name)
 
+    # Create a queue to write errors to
     error_queue = AWSQueueService(env, error_queue_name)
 
+    # Create a datasource to read and write data from
     bucket = CLIBucketService(GCSCLIProvider.Details(), bucket_name)
-
     cache = FileSystemCacheService(cache_directory)
-
     datasource = BucketCacheDatasourceService(bucket, cache)
 
+    # create a daemon to run tasks
     daemon = DaemonService(task_queue, error_queue, bucket, datasource,
         poll_frequency_seconds)
 
+    # Register the NOOP task
     register!(daemon, NoOpTask.NAME, NoOpTaskDetails)
 
     Daemon.run(daemon)
