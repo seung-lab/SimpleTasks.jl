@@ -116,27 +116,27 @@ Julia's package manager should handle the rest ```Pkg.add("SimpleTasks")```.
   * Input
     * AWS S3
       ```
-      s3://BUCKET_NAME/datasets/nooop_dataset/0_input/4.dat
-      s3://BUCKET_NAME/datasets/nooop_dataset/0_input/5.dat
+      s3://BUCKET_NAME/datasets/noop_dataset/0_input/4.dat
+      s3://BUCKET_NAME/datasets/noop_dataset/0_input/5.dat
       ```
       
     * Local
       ```
-      /var/tmp/taskdaemon/datasets/nooop_dataset/0_input/4.dat
+      /var/tmp/taskdaemon/datasets/noop_dataset/0_input/4.dat
       /var/tmp/taskdaemon/datasets/nooop_dataset/0_input/5.dat
       ```
       
   * Output
     * AWS S3
       ```
-      s3://BUCKET_NAME/datasets/nooop_dataset/0_output/4.dat
-      s3://BUCKET_NAME/datasets/nooop_dataset/0_output/5.dat
+      s3://BUCKET_NAME/datasets/noop_dataset/0_output/4.dat
+      s3://BUCKET_NAME/datasets/noop_dataset/0_output/5.dat
       ```
       
     * Local
       ```
-      /var/tmp/taskdaemon/datasets/nooop_dataset/0_output/4.dat
-      /var/tmp/taskdaemon/datasets/nooop_dataset/0_output/5.dat
+      /var/tmp/taskdaemon/datasets/noop_dataset/0_output/4.dat
+      /var/tmp/taskdaemon/datasets/noop_dataset/0_output/5.dat
       ```
       
   
@@ -180,7 +180,35 @@ Use case: You have many inputs to your task that are not captured by a simple Ab
 Extend [queue.jl](src/services/queue.jl) and/or [bucket.jl](src/services/bucket.jl) and plug those into the daemon.
 
 ###Datasource
+Note that the bucket layout that corresponds to the ```BasicTask.Info```
 
-##Warning
+```
+s3://BUCKET_NAME/datasets/dataset_name/task_folder/input.h5
+```
+
+```
+# info is of type BasicTask.info
+info.baseDirectory = "datasets/dataset_name"
+info.inputs[1] = "task_folder/input.h5"
+```
+
+####Warning
 The provided ```FileSystemCache``` uses the filesystem. No guarantees are made to make this safe (for now)
- 
+
+##Cloud
+###Google Cloud startup script:
+```
+#! /bin/bash
+export AWS_ACCESS_KEY_ID=$(curl http://metadata.google.internal/computeMetadata/v1/project/attributes/aws-sqs-access-id -H "Metadata-Flavor: Google")
+export AWS_SECRET_ACCESS_KEY=$(curl http://metadata.google.internal/computeMetadata/v1/project/attributes/aws-sqs-secret-access-key -H "Metadata-Flavor: Google")
+export TASK_QUEUE=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/task-queue -H "Metadata-Flavor: Google")
+export ERROR_QUEUE=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/error-queue -H "Metadata-Flavor: Google")
+export BUCKET_NAME=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/bucket-name -H "Metadata-Flavor: Google")
+export CACHE_DIRECTORY=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/cache-directory -H "Metadata-Flavor: Google")
+export POLL_FREQUENCY_SECONDS=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/poll-frequency-seconds -H "Metadata-Flavor: Google")
+sudo -u ubuntu -H sh -c "stdbuf -oL -eL julia /home/ubuntu/.julia/v0.4/SimpleTasks/src/examples/runhybriddaemon.jl $TASK_QUEUE $ERROR_QUEUE $BUCKET_NAME $CACHE_DIRECTORY $POLL_FREQUENCY_SECONDS | tee -a /home/ubuntu/daemon.out &"
+```
+
+##Feature Wishlist
+* Dependency scheduling ? (retasking)
+
