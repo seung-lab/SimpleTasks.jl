@@ -6,7 +6,7 @@ You need to parallelize simple processes in the cloud using Julia.
 ##How does it work?
 You provide a ```QueueService``` (AWS SQS implementation provided) and a ```BucketService``` (AWS S3 and GCS implementation provided).  Tasks are scheduled into your ```QueueService``` and data is pulled from your ```BucketService``` for processing and results are pushed back to your ```BucketService``` 
 
-See [Advanced](#Advanced) for additional customization options.
+See [Advanced](#advanced) for additional customization options.
 
 ##Sounds great! Set me up! (Installation)
 See REQUIRE file for required packages. You may need to run ```sudo apt-get install build-essential cmake``` to build certain required projects.
