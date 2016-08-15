@@ -9,7 +9,7 @@ import SimpleTasks.Services.CLIBucket
 import SimpleTasks.Services.AWSCLIProvider
 import SimpleTasks.Services.GCSCLIProvider
 
-const TEST_FILE_NAME = "testfile"
+const TEST_FILE_NAME = "testfile$(rand())"
 const BUCKET_NAME = "seunglab-test"
 const MAX_INDEX = 100000
 
