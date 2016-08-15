@@ -11,7 +11,7 @@ Type contains basic information for a daemon task
 type Info
     id::Int64                           # Numerical identifier for specific task
     name::AbstractString                # String identifer for the type of task
-    baseDirectory::AbstractString       # Base directory for fetching input data
+    base_directory::AbstractString       # Base directory for fetching input data
     inputs::Array{AbstractString, 1}    # Names of files we are fetching
 end
 
@@ -27,8 +27,8 @@ function Info{String <: AbstractString}(dict::Dict{String, Any})
     end
 
     # parse base directory
-    if isempty(strip(dict["baseDirectory"]))
-        throw(ArgumentError("Payload does not include a baseDirectory"))
+    if isempty(strip(dict["base_directory"]))
+        throw(ArgumentError("Payload does not include a base_directory"))
     end
 
     # parse input list
@@ -37,7 +37,7 @@ function Info{String <: AbstractString}(dict::Dict{String, Any})
         throw(ArgumentError("Payload does not include a input list"))
     end
 
-    return Info(id, dict["name"], dict["baseDirectory"], dict["inputs"])
+    return Info(id, dict["name"], dict["base_directory"], dict["inputs"])
 end
 
 end # module BasicTask

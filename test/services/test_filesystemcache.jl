@@ -132,7 +132,7 @@ function test_clear()
     Cache.put!(cache, filename2, buffer2)
     Cache.clear!(cache)
 
-    @test isempty(readdir(cache.baseDirectory))
+    @test isempty(readdir(cache.base_directory))
 end
 
 function __init__()

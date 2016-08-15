@@ -64,9 +64,9 @@ end
 
 function create_task(index::Int64)
     task_indices = index:index+1
-    basicInfo = BasicTask.Info(index, NoOpTask.NAME, BASE_DIRECTORY,
+    basic_info = BasicTask.Info(index, NoOpTask.NAME, BASE_DIRECTORY,
         map(to_key, task_indices))
-    task = NoOpTaskDetails(basicInfo, "NoOp Task for $task_indices")
+    task = NoOpTaskDetails(basic_info, "NoOp Task for $task_indices")
     return task
 end
 

@@ -41,7 +41,7 @@ function test_parse_no_basic_info()
         MockBucketService(), MockDatasourceService(), 10)
     task = make_valid_task_execute()
     dict = JSON.parse(JSON.json(task))
-    delete!(dict, "basicInfo")
+    delete!(dict, "basic_info")
     @test_throws KeyError Daemon.parse(daemon, JSON.json(dict))
 end
 
@@ -51,7 +51,7 @@ function test_parse_no_payload_info()
     task = make_valid_task_execute()
     Daemon.register!(daemon, TEST_TASK_NAME, typeof(task))
     dict = JSON.parse(JSON.json(task))
-    delete!(dict, "payloadInfo")
+    delete!(dict, "payload_info")
     @test_throws KeyError Daemon.parse(daemon, JSON.json(dict))
 end
 
@@ -72,9 +72,9 @@ function test_parse_good()
     dict = JSON.parse(JSON.json(task))
     parsed_task = Daemon.parse(daemon, JSON.json(dict))
     @test parsed_task != nothing
-    @test parsed_task.basicInfo.name == task.basicInfo.name
-    @test parsed_task.basicInfo.id == task.basicInfo.id
-    @test parsed_task.payloadInfo == task.payloadInfo
+    @test parsed_task.basic_info.name == task.basic_info.name
+    @test parsed_task.basic_info.id == task.basic_info.id
+    @test parsed_task.payload_info == task.payload_info
 
 end
 

@@ -20,8 +20,8 @@ This is the base composite abstract class used to compose Details and Payload
 i.e. compose a task with
 ```julia
 type YourDaemonTaskDetails <: DaemonTaskDetails
-    basicInfo::BasicTask.Info
-    taskInfo::YourTask.Info
+    basic_info::BasicTask.Info
+    payload_info::YourTask.Info
 end
 ```
 """

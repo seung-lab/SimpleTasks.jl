@@ -45,8 +45,8 @@ function run(daemon::DaemonService)
                 try
                     task = parse(daemon, message)
 
-                    println("Task is $(task.basicInfo.id), ",
-                        task.basicInfo.name)
+                    println("Task is $(task.basic_info.id), ",
+                        task.basic_info.name)
 
                     success = DaemonTask.run(task, daemon.datasource)
                 catch task_exception
@@ -121,14 +121,14 @@ function parse(daemon::DaemonService, text::ASCIIString)
 
     message = JSON.parse(text)
 
-    basic_info = BasicTask.Info(message["basicInfo"])
+    basic_info = BasicTask.Info(message["basic_info"])
 
     if !haskey(daemon.tasks, basic_info.name)
         error("Task $(basic_info.name) is not registered with the daemon")
     end
 
     task_type = daemon.tasks[basic_info.name]
-    return task_type(basic_info, message["payloadInfo"])
+    return task_type(basic_info, message["payload_info"])
 end
 
 end # end module Daemon

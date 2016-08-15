@@ -11,13 +11,13 @@ import SimpleTasks.Services.Datasource
 
 function test_create()
     task = NoOpTaskDetails(make_valid_basic_info(), "TEST")
-    task.basicInfo.name = NoOpTask.NAME
+    task.basic_info.name = NoOpTask.NAME
     @test task != nothing
 end
 
 function test_run()
     task = NoOpTaskDetails(make_valid_basic_info(), "TEST")
-    task.basicInfo.name = NoOpTask.NAME
+    task.basic_info.name = NoOpTask.NAME
     datasource = MockDatasourceService()
 
     #prime the cache

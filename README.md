@@ -1,4 +1,4 @@
-#SimpleTasks [![Build Status](https://travis-ci.org/seung-lab/SimpleTasks.jl.svg?branch=master)](https://travis-ci.org/seung-lab/SimpleTasks.jl)
+#SimpleTasks [![Build Status](https://travis-ci.org/seung-lab/SimpleTasks.svg?branch=master)](https://travis-ci.org/seung-lab/SimpleTasks)
 
 ##Why do you want this?
 You need to parallelize simple processes in the cloud using Julia.
@@ -22,20 +22,20 @@ Julia's package manager should handle the rest ```Pkg.add("SimpleTasks")```.
   * Custom Task Type
     ``` julia
     type NoOpTaskDetails <: DaemonTaskDetails
-      basicInfo::BasicTask.Info
-      payloadInfo::AbstractString
+      basic_info::BasicTask.Info
+      payload_info::AbstractString
     end
     ```
     
     This type must be JSON serializable. 
-    ```basicInfo``` is described below
-    ```payloadInfo``` does not need to be of AbstractString. See [Custom Payload](#custom-payload) for more details.
+    ```basic_info``` is described below
+    ```payload_info``` does not need to be of AbstractString. See [Custom Payload](#custom-payload) for more details.
   * BasicTask.Info already implemented as:
     ``` julia
     type Info
       id::Int64                           # Numerical identifier for specific task
       name::AbstractString                # String identifer for the type of task
-      baseDirectory::AbstractString       # Base directory for fetching input data
+      base_directory::AbstractString       # Base directory for fetching input data
       inputs::Array{AbstractString, 1}    # Names of files we are fetching
     end
     ```
@@ -85,7 +85,7 @@ Julia's package manager should handle the rest ```Pkg.add("SimpleTasks")```.
   
   Relevant parts are:
   ``` julia
-   task = NoOpTaskDetails(basicInfo, "NoOp Task for $task_indices")
+   task = NoOpTaskDetails(basic_info, "NoOp Task for $task_indices")
    ...
    map((task) -> Queue.push_message(queue; message_body = JSON.json(task)), tasks)
   ```
@@ -99,16 +99,16 @@ Julia's package manager should handle the rest ```Pkg.add("SimpleTasks")```.
 * Example of generated task
   ``` json
   {
-    "basicInfo": {
+    "basic_info": {
       "id": 4,
       "name": "NO_OP",
-      "baseDirectory": "datasets\/noop_dataset",
+      "base_directory": "datasets\/noop_dataset",
       "inputs": [
         "0_input\/4.dat",
         "0_input\/5.dat"
       ]
     },
-    "payloadInfo": "NoOp Task for 4:5"
+    "payload_info": "NoOp Task for 4:5"
   }
   ```
   
@@ -162,18 +162,18 @@ Use case: You have many inputs to your task that are not captured by a simple Ab
   end
   ```
   
-3. Set your task's ```payloadInfo``` to use that type
+3. Set your task's ```payload_info``` to use that type
   ``` julia
   type ComplexPayloadTask <: DaemonTaskDetails
-      basicInfo::BasicTask.Info
-      payloadInfo::ComplexPayload.Info
+      basic_info::BasicTask.Info
+      payload_info::ComplexPayload.Info
   end
   ```
   
 4. Create your task constructor to automatically call the payload dictionary constructor
   ``` julia
-  ComplexPayloadTask{String <: AbstractString}(basicInfo::BasicTask.Info,
-    dict::Dict{String, Any}) = ComplexPayloadTask(basicInfo, ComplexPayload.Info(dict))
+  ComplexPayloadTask{String <: AbstractString}(basic_info::BasicTask.Info,
+    dict::Dict{String, Any}) = ComplexPayloadTask(basic_info, ComplexPayload.Info(dict))
   ```
 
 ###What if I don't use AWS or GCS?
@@ -188,7 +188,7 @@ s3://BUCKET_NAME/datasets/dataset_name/task_folder/input.h5
 
 ```
 # info is of type BasicTask.info
-info.baseDirectory = "datasets/dataset_name"
+info.base_directory = "datasets/dataset_name"
 info.inputs[1] = "task_folder/input.h5"
 ```
 

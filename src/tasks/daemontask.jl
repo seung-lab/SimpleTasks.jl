@@ -45,10 +45,10 @@ end
     make_key(task::DaemonTaskDetails, input::AbstractString)
 
 Get the fully qualified input key which is the input appended to the
-baseDirectory of the task
+base_directory of the task
 """
 function make_key(task::DaemonTaskDetails, input::AbstractString)
-    return "$(task.basicInfo.baseDirectory)/$input"
+    return "$(task.basic_info.base_directory)/$input"
 end
 
 """

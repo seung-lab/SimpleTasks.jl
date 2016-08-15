@@ -10,11 +10,11 @@ export FileSystemCacheService
 const FOLDER_SEPARATOR = "/"
 
 type FileSystemCacheService <: CacheService
-    baseDirectory::AbstractString
+    base_directory::AbstractString
 
-    FileSystemCacheService(baseDirectory::AbstractString) =
-        isempty(strip(baseDirectory)) ?  throw(ArgumentError("Base directory can
-            not be empty")) : new(baseDirectory)
+    FileSystemCacheService(base_directory::AbstractString) =
+        isempty(strip(base_directory)) ?  throw(ArgumentError("Base directory can
+            not be empty")) : new(base_directory)
 end
 
 function sanitize(key::AbstractString)
@@ -22,7 +22,7 @@ function sanitize(key::AbstractString)
 end
 
 function to_filename(cache::FileSystemCacheService, key::AbstractString)
-    return "$(cache.baseDirectory)$FOLDER_SEPARATOR$(sanitize(key))"
+    return "$(cache.base_directory)$FOLDER_SEPARATOR$(sanitize(key))"
 end
 
 function create_path(full_path_file_name::AbstractString)
@@ -85,7 +85,7 @@ function Cache.remove!(cache::FileSystemCacheService, key::AbstractString)
 end
 
 function Cache.clear!(cache::FileSystemCacheService)
-    contents = readdir(cache.baseDirectory)
+    contents = readdir(cache.base_directory)
     for content in contents
         rm(to_filename(cache, content); recursive=true)
     end

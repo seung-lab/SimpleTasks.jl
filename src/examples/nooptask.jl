@@ -15,8 +15,8 @@ import SimpleTasks.Services.Datasource
 export NoOpTaskDetails, NAME, full_output_path
 
 type NoOpTaskDetails <: DaemonTaskDetails
-    basicInfo::BasicTask.Info
-    payloadInfo::AbstractString
+    basic_info::BasicTask.Info
+    payload_info::AbstractString
 end
 
 const NAME = "NO_OP"
@@ -26,7 +26,7 @@ function full_output_path(task::NoOpTaskDetails,
         input::AbstractString)
     path_end = rsearch(input, "/").start + 1
 
-    return "$(task.basicInfo.baseDirectory)/$OUTPUT_FOLDER/" *
+    return "$(task.basic_info.base_directory)/$OUTPUT_FOLDER/" *
         "$(input[path_end:end])"
 end
 
@@ -34,12 +34,12 @@ function DaemonTask.prepare(task::NoOpTaskDetails,
         datasource::DatasourceService)
     # Prime the cache
     Datasource.get(datasource,
-        map((input) -> DaemonTask.make_key(task, input), task.basicInfo.inputs))
+        map((input) -> DaemonTask.make_key(task, input), task.basic_info.inputs))
 end
 
 function DaemonTask.execute(task::NoOpTaskDetails,
         datasource::DatasourceService)
-    inputs = task.basicInfo.inputs
+    inputs = task.basic_info.inputs
 
     if length(inputs) == 0
         return DaemonTask.Result(true, [])
@@ -68,19 +68,19 @@ end
 function DaemonTask.finalize(task::NoOpTaskDetails,
         datasource::DatasourceService, result::DaemonTask.Result)
     if !result.success
-        error("Task $(task.basicInfo.id), $(task.basicInfo.name) was " *
+        error("Task $(task.basic_info.id), $(task.basic_info.name) was " *
             "not successful")
     else
-        println("Task $(task.basicInfo.id), $(task.basicInfo.name) was " *
+        println("Task $(task.basic_info.id), $(task.basic_info.name) was " *
             "completed successfully, syncing outputs to remote datasource")
         Datasource.put!(datasource,
             map((output) -> full_output_path(task, output), result.outputs))
     end
 
     # Arbitrarily delete the first input file from the cache
-    if !isempty(task.basicInfo.inputs)
+    if !isempty(task.basic_info.inputs)
         Datasource.remove!(datasource,
-            DaemonTask.make_key(task, task.basicInfo.inputs[1]);
+            DaemonTask.make_key(task, task.basic_info.inputs[1]);
                 only_cache=true)
     end
 

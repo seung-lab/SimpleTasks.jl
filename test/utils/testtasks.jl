@@ -22,13 +22,13 @@ function make_valid_basic_info()
 end
 
 type MockTaskNoExecute <: DaemonTaskDetails
-    basicInfo::BasicTask.Info
-    payloadInfo::AbstractString
+    basic_info::BasicTask.Info
+    payload_info::AbstractString
 end
 
 type MockTaskExecute <: DaemonTaskDetails
-    basicInfo::BasicTask.Info
-    payloadInfo::AbstractString
+    basic_info::BasicTask.Info
+    payload_info::AbstractString
 end
 # register a registered test task
 function DaemonTask.execute(task::MockTaskExecute,

@@ -46,14 +46,14 @@ end
 function test_basic_info_no_base_directory()
     info = make_valid_basic_info()
     dict = JSON.parse(JSON.json(info))
-    delete!(dict, "baseDirectory")
+    delete!(dict, "base_directory")
     @test_throws KeyError BasicTask.Info(dict)
 end
 
 function test_basic_info_empty_base_directory()
     info = make_valid_basic_info()
     dict = JSON.parse(JSON.json(info))
-    dict["baseDirectory"] = "   "
+    dict["base_directory"] = "   "
     @test_throws ArgumentError BasicTask.Info(dict)
 end
 
@@ -79,7 +79,7 @@ function test_basic_info_info_good()
     @test new_info != nothing
     @test new_info.id == TEST_ID
     @test new_info.name == TEST_TASK_NAME
-    @test new_info.baseDirectory == TEST_BASE_DIRECTORY
+    @test new_info.base_directory == TEST_BASE_DIRECTORY
     @test length(new_info.inputs) == length(TEST_INPUTS)
     for index in 1:length(TEST_INPUTS)
         @test new_info.inputs[index] == TEST_INPUTS[index]
