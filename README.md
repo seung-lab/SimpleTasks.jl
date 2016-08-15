@@ -1,4 +1,4 @@
-#SimpleTasks [![Build Status](https://travis-ci.org/seung-lab/SimpleTasks.svg?branch=master)](https://travis-ci.org/seung-lab/SimpleTasks)
+#SimpleTasks [![Build Status](https://travis-ci.org/seung-lab/SimpleTasks.jl.svg?branch=master)](https://travis-ci.org/seung-lab/SimpleTasks.jl)
 
 ##Why do you want this?
 You need to parallelize simple processes in the cloud using Julia.
