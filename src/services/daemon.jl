@@ -38,7 +38,7 @@ function run(daemon::DaemonService)
             message = Queue.pop_message(daemon.task_queue)
 
             if isempty(message)
-                println("No messages found in", Queue.string(daemon.task_queue))
+                println("No messages found in ", Queue.string(daemon.task_queue))
             else
                 println("Message received is $(message)")
 
