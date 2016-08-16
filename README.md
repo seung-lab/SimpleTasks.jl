@@ -13,6 +13,20 @@ See REQUIRE file for required packages. You may need to run ```sudo apt-get inst
 
 Julia's package manager should handle the rest ```Pkg.add("SimpleTasks")```.
 
+To use ```BucketService``` with AWS, you must have the latest AWS CLI version
+```
+# Check current version -- too old :(
+$aws --version
+aws-cli/1.2.9 Python/3.4.3 Linux/3.13.0-74-generic
+
+# Update aws cli
+$sudo pip install awscli 
+...
+
+# Check new version -- Great! :D
+$aws --version
+aws-cli/1.10.56 Python/2.7.6 Linux/3.13.0-74-generic botocore/1.4.46
+```
 ##Let's do this!
 ###Tutorial
 1. Create one or many ```DaemonTask```s
@@ -208,6 +222,10 @@ export CACHE_DIRECTORY=$(curl http://metadata.google.internal/computeMetadata/v1
 export POLL_FREQUENCY_SECONDS=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/poll-frequency-seconds -H "Metadata-Flavor: Google")
 sudo -u ubuntu -H sh -c "stdbuf -oL -eL julia /home/ubuntu/.julia/v0.4/SimpleTasks/src/examples/runhybriddaemon.jl $TASK_QUEUE $ERROR_QUEUE $BUCKET_NAME $CACHE_DIRECTORY $POLL_FREQUENCY_SECONDS | tee -a /home/ubuntu/daemon.out &"
 ```
+
+##Troubleshooting
+### My downloaded files are showing up as ```download: s3://xxxx to ./-```
+Your AWS CLI is TOO OLD! [Update it!](#sounds-great-set-me-up-installation)
 
 ##Feature Wishlist
 * Dependency scheduling ? (retasking)
