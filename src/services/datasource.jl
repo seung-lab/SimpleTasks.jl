@@ -93,8 +93,8 @@ Remove multiple keys from the datasource. Optionally only remove from cache
 """
 function remove!{String <: AbstractString}(datasource::DatasourceService,
         keys::Array{String, 1}; only_cache::Bool=false)
-    return map((key) -> Datasource.remove!(datasource, key);
-        only_cache=only_cache, keys)
+    return pmap((key) -> Datasource.remove!(datasource, key;
+        only_cache=only_cache), keys)
 end
 
 """
