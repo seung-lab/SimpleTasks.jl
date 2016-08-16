@@ -26,7 +26,7 @@ Optionally allow skipping any cached values.
 # to Array{AbstractString, 1}
 function get{String <: AbstractString}(datasource::DatasourceService,
         keys::Array{String, 1}; override_cache::Bool=false)
-    return map((key) -> Datasource.get(datasource, key;
+    return pmap((key) -> Datasource.get(datasource, key;
         override_cache=override_cache), keys)
 end
 
@@ -63,14 +63,14 @@ not specified.
 function put!{String <: AbstractString, I <: Union{IO, Void}}(
         datasource::DatasourceService, keys::Array{String, 1},
         new_values::Array{I, 1}; only_cache::Bool=false)
-    return map((index) -> Datasource.put!(datasource, keys[index],
+    return pmap((index) -> Datasource.put!(datasource, keys[index],
         new_values[index]; only_cache=only_cache), 1:length(keys))
 end
 
 function put!{String <: AbstractString}(
         datasource::DatasourceService, keys::Array{String, 1};
         only_cache::Bool=false)
-    return map((index) -> Datasource.put!(datasource, keys[index],
+    return pmap((index) -> Datasource.put!(datasource, keys[index],
         nothing; only_cache=only_cache), 1:length(keys))
 end
 
