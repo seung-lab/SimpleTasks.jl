@@ -501,6 +501,49 @@ function test_remove()
     @test !haskey(cache.mockValues, key)
 end
 
+function test_remove_multi()
+    key1 = "somekey1"
+
+    bucket_text1 = "mock contents"
+    bucket_file1 = IOBuffer(bucket_text1)
+    seekstart(bucket_file1)
+
+    key2 = "somekey2"
+
+    bucket_text2 = "mock contents2"
+    bucket_file2 = IOBuffer(bucket_text2)
+    seekstart(bucket_file2)
+
+    bucket_files = Dict()
+    bucket_files[key1] = bucket_file1
+    bucket_files[key2] = bucket_file2
+
+    cache_text1 = "mock contents cached already1"
+    cache_io1 = IOBuffer(cache_text1)
+    seekstart(cache_io1)
+
+    cache_text2 = "mock contents cached already2"
+    cache_io2 = IOBuffer(cache_text2)
+    seekstart(cache_io2)
+
+    cache_values = Dict()
+    cache_values[key1] = cache_io1
+    cache_values[key2] = cache_io2
+
+    bucket = MockBucketService(bucket_files)
+    cache = MockCacheService(cache_values)
+    datasource = BucketCacheDatasourceService(bucket, cache)
+
+    Datasource.remove!(datasource, [key1, key2])
+
+    # ensure that all values were removed from both bucket and cache
+    @test !haskey(bucket.mockFiles, key1)
+    @test !haskey(cache.mockValues, key1)
+
+    @test !haskey(bucket.mockFiles, key2)
+    @test !haskey(cache.mockValues, key2)
+end
+
 function test_remove_cache_only()
     key = "somekey"
 
@@ -580,6 +623,7 @@ function __init__()
     test_put_not_exist_new_value()
 
     test_remove()
+    test_remove_multi()
     test_remove_cache_only()
 
     test_clear_cache()
