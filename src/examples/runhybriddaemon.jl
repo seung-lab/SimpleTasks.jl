@@ -46,7 +46,7 @@ function run(task_queue_name, error_queue_name, done_queue_name,
     datasource = BucketCacheDatasourceService(bucket, cache)
 
     # create a daemon to run tasks
-    daemon = DaemonService(task_queue, error_queue, done_queue_name,
+    daemon = DaemonService(task_queue, error_queue, done_queue,
         bucket, datasource, poll_frequency_seconds)
 
     # Register the NOOP task
