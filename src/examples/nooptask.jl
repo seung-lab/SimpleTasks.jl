@@ -83,7 +83,6 @@ function DaemonTask.finalize(task::NoOpTaskDetails,
             DaemonTask.make_key(task, task.basic_info.inputs[1]);
                 only_cache=true)
     end
-
 end
 
 end # module BlockMatchTask

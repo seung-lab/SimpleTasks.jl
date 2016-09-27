@@ -11,16 +11,19 @@ import SimpleTasks.Services.Datasource
 import SimpleTasks.Tasks.DaemonTask
 import JSON
 
+function make_mock_daemon_service()
+    return DaemonService(MockQueueService(), MockQueueService(),
+        MockQueueService(), MockBucketService(), MockDatasourceService(), 10)
+end
+
 function test_register_no_execute_method()
-    daemon = DaemonService(MockQueueService(), MockQueueService(),
-        MockBucketService(), MockDatasourceService(), 10)
+    daemon = make_mock_daemon_service()
     @test_throws Exception Daemon.register!(daemon,
         TEST_TASK_NAME, MockTaskNoExecute)
 end
 
 function test_register_with_execute_method()
-    daemon = DaemonService(MockQueueService(), MockQueueService(),
-        MockBucketService(), MockDatasourceService(), 10)
+    daemon = make_mock_daemon_service()
     exception = nothing
     try
          Daemon.register!(daemon, TEST_TASK_NAME, MockTaskExecute)
@@ -31,14 +34,12 @@ function test_register_with_execute_method()
 end
 
 function test_parse_empty()
-    daemon = DaemonService(MockQueueService(), MockQueueService(),
-        MockBucketService(), MockDatasourceService(), 10)
+    daemon = make_mock_daemon_service()
     @test_throws ArgumentError Daemon.parse(daemon, " ")
 end
 
 function test_parse_no_basic_info()
-    daemon = DaemonService(MockQueueService(), MockQueueService(),
-        MockBucketService(), MockDatasourceService(), 10)
+    daemon = make_mock_daemon_service()
     task = make_valid_task_execute()
     dict = JSON.parse(JSON.json(task))
     delete!(dict, "basic_info")
@@ -46,8 +47,7 @@ function test_parse_no_basic_info()
 end
 
 function test_parse_no_payload_info()
-    daemon = DaemonService(MockQueueService(), MockQueueService(),
-        MockBucketService(), MockDatasourceService(), 10)
+    daemon = make_mock_daemon_service()
     task = make_valid_task_execute()
     Daemon.register!(daemon, TEST_TASK_NAME, typeof(task))
     dict = JSON.parse(JSON.json(task))
@@ -56,8 +56,7 @@ function test_parse_no_payload_info()
 end
 
 function test_parse_task_not_registered()
-    daemon = DaemonService(MockQueueService(), MockQueueService(),
-        MockBucketService(), MockDatasourceService(), 10)
+    daemon = make_mock_daemon_service()
     task = make_valid_task_execute()
     dict = JSON.parse(JSON.json(task))
 
@@ -65,8 +64,7 @@ function test_parse_task_not_registered()
 end
 
 function test_parse_good()
-    daemon = DaemonService(MockQueueService(), MockQueueService(),
-        MockBucketService(), MockDatasourceService(), 10)
+    daemon = make_mock_daemon_service()
     task = make_valid_task_execute()
     Daemon.register!(daemon, TEST_TASK_NAME, typeof(task))
     dict = JSON.parse(JSON.json(task))
