@@ -14,22 +14,39 @@ export DaemonService, register!, run
 type DaemonService
     task_queue::QueueService
     error_queue::QueueService
+    done_queue::QueueService
     bucket::BucketService
     datasource::DatasourceService
     poll_frequency_seconds::Int64
     tasks::Dict{AbstractString, Type}
 end
 
-type TaskExceptionReport
-    task_message::AbstractString
-    exception_message::AbstractString
+DaemonService(task_queue::QueueService, error_queue::QueueService,
+    done_queue::QueueService, bucket::BucketService,
+    datasource::DatasourceService, poll_frequency_seconds::Int64) =
+        DaemonService(task_queue, error_queue, done_queue, bucket,
+            datasource, poll_frequency_seconds,
+            Dict{AbstractString, Module}())
+
+########### Helper types for queue notification ###########
+
+type DaemonHostInfo
+    hostname::AbstractString
+    user::AbstractString
+end
+DAEMON_HOST_INFO = DaemonHostInfo(gethostname(), ENV["USER"])
+
+type ErrorReport
+    host_info::DaemonHostInfo
+    task::Union{AbstractString, DaemonTaskDetails}
+    exception::AbstractString
 end
 
-DaemonService(task_queue::QueueService, error_queue::QueueService,
-    bucket::BucketService, datasource::DatasourceService,
-    poll_frequency_seconds::Int64) = 
-        DaemonService(task_queue, error_queue, bucket, datasource,
-            poll_frequency_seconds, Dict{AbstractString, Module}())
+type DoneReport
+    host_info::DaemonHostInfo
+    task::DaemonTaskDetails
+    result::DaemonTask.Result
+end
 
 function run(daemon::DaemonService)
     while true
@@ -42,20 +59,24 @@ function run(daemon::DaemonService)
             else
                 println("Message received is $(message)")
 
+                task = nothing
                 try
                     task = parse(daemon, message)
 
                     println("Task is $(task.basic_info.id), ",
                         task.basic_info.name)
 
-                    success = DaemonTask.run(task, daemon.datasource)
+                    result = DaemonTask.run(task, daemon.datasource)
+
+                    notify_task_done(daemon.done_queue, task, result)
                 catch task_exception
                     exception_buffer = IOBuffer()
                     showerror(exception_buffer, task_exception,
                         catch_backtrace(); backtrace = true)
                     seekstart(exception_buffer)
                     notify_task_error(daemon.error_queue,
-                        TaskExceptionReport(message, readall(exception_buffer)))
+                        task == nothing ? message : task,
+                        readall(exception_buffer))
                     rethrow(task_exception)
                 end
             end
@@ -65,18 +86,27 @@ function run(daemon::DaemonService)
             println(STDERR)
         end
 
-
         sleep(daemon.poll_frequency_seconds)
     end
 end
 
+function notify_task_done(queue::QueueService, task::DaemonTaskDetails,
+        result::DaemonTask.Result)
+    done_report = DoneReport(DAEMON_HOST_INFO, task, result)
+    Queue.push_message(queue; message_body = JSON.json(done_report))
+end
+
 """
-    notify_task_error(queue::QueueService, task_message::AbstractString,
-        exception::Exception)
+    notify_task_error(queue::QueueService,
+        task::Union{DaemonTaskDetails, AbstractString},
+        exception_message::AbstractString)
 """
 function notify_task_error(queue::QueueService,
-        error_report::TaskExceptionReport)
+        task::Union{DaemonTaskDetails, AbstractString},
+        exception_message::AbstractString)
     try
+        error_report = ErrorReport(DAEMON_HOST_INFO, task,
+            exception_message)
         Queue.push_message(queue; message_body = JSON.json(error_report))
     catch notify_exception
         print(STDERR, "ERROR in notifying  error-queue ", Queue.string(queue),

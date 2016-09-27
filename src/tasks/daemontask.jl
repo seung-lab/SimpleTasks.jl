@@ -60,6 +60,7 @@ function run(task::DaemonTaskDetails, datasource::DatasourceService)
     prepare(task, datasource)
     result = execute(task, datasource)
     finalize(task, datasource, result)
+    return result;
 end
 
 """
