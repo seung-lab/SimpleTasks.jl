@@ -19,10 +19,9 @@ type CLIBucketService <: BucketService
         check_reachable(provider, name) && new(provider, name)
 end
 
-const megabyte = 1024 * 1024
-const write_bytes = 50 * megabyte
-const read_bytes = 50 * megabyte
-
+const MEGABYTE = 1024 * 1024
+const WRITE_BYTES = 50 * MEGABYTE
+const READ_BYTES = 50 * MEGABYTE
 
 function check_reachable(provider::Provider, bucket_name::AbstractString)
     ls_cmd = `$(provider.command) ls $(provider.prefix)/$bucket_name`
@@ -60,7 +59,7 @@ function Bucket.download(bucket::CLIBucketService,
             local_file = open(local_file, "w")
         end
         while !eof(s3_output)
-            write(local_file, readbytes(s3_output, write_bytes))
+            write(local_file, readbytes(s3_output, WRITE_BYTES))
         end
         if !success(process)
             error("Download did not complete cleanly")
@@ -94,7 +93,7 @@ function Bucket.upload(bucket::CLIBucketService,
     end
 
     while !eof(local_file)
-        write(s3_input, readbytes(local_file, read_bytes))
+        write(s3_input, readbytes(local_file, READ_BYTES))
     end
 
     close(s3_input.in)
