@@ -15,7 +15,7 @@ end
 
 function Datasource.get(datasource::BucketCacheDatasourceService,
         key::AbstractString; override_cache::Bool=false)
-    if override_cache || !Cache.exists(datasource.cache, key)
+    if override_cache || !Cache.haskey(datasource.cache, key)
         stream = Bucket.download(datasource.remote, key)
         Cache.put!(datasource.cache, key, stream)
         close(stream)
@@ -31,7 +31,7 @@ function Datasource.put!(datasource::BucketCacheDatasourceService,
         Cache.put!(datasource.cache, key, new_value)
     end
 
-    if !Cache.exists(datasource.cache, key)
+    if !Cache.haskey(datasource.cache, key)
         return false
     end
 
@@ -42,13 +42,13 @@ function Datasource.put!(datasource::BucketCacheDatasourceService,
     return true
 end
 
-function Datasource.remove!(datasource::BucketCacheDatasourceService,
+function Datasource.delete!(datasource::BucketCacheDatasourceService,
         key::AbstractString; only_cache::Bool=false)
     if !only_cache
         Bucket.delete(datasource.remote, key)
     end
 
-    Cache.remove!(datasource.cache, key)
+    Cache.delete!(datasource.cache, key)
 end
 
 function Datasource.clear_cache(datasource::BucketCacheDatasourceService)

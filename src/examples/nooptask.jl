@@ -79,7 +79,7 @@ function DaemonTask.finalize(task::NoOpTaskDetails,
 
     # Arbitrarily delete the first input file from the cache
     if !isempty(task.basic_info.inputs)
-        Datasource.remove!(datasource,
+        Datasource.delete!(datasource,
             DaemonTask.make_key(task, task.basic_info.inputs[1]);
                 only_cache=true)
     end
