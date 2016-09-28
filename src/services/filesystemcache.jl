@@ -17,6 +17,9 @@ type FileSystemCacheService <: CacheService
             not be empty")) : new(base_directory)
 end
 
+const MEGABYTE = 1024 * 1024
+const WRITE_BYTES = 50 * MEGABYTE
+
 function sanitize(key::AbstractString)
     return replace(key, r"\.\.", "")
 end
@@ -51,7 +54,9 @@ function Cache.put!(cache::FileSystemCacheService, key::AbstractString,
             println("wARNING: trying to read from an IOBuffer with current " *
                 "position at the end of the buffer")
         end
-        write(filestream, readbytes(value_io))
+        while !eof(value_io)
+            write(filestream, readbytes(value_io, WRITE_BYTES))
+        end
         close(filestream)
     catch e
         # if there was an error in reading/writing the stream, we should
