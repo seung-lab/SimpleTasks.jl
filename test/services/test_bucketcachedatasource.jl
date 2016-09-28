@@ -475,7 +475,7 @@ function test_put_multi_new_value_only_cache()
 
 end
 
-function test_remove()
+function test_delete()
     key = "somekey"
 
     bucket_text = "mock contents"
@@ -494,14 +494,14 @@ function test_remove()
     cache = MockCacheService(cache_values)
     datasource = BucketCacheDatasourceService(bucket, cache)
 
-    Datasource.remove!(datasource, key)
+    Datasource.delete!(datasource, key)
 
-    # ensure that the value was removed from both bucket and cache
+    # ensure that the value was deleted from both bucket and cache
     @test !haskey(bucket.mockFiles, key)
     @test !haskey(cache.mockValues, key)
 end
 
-function test_remove_multi()
+function test_delete_multi()
     key1 = "somekey1"
 
     bucket_text1 = "mock contents"
@@ -534,9 +534,9 @@ function test_remove_multi()
     cache = MockCacheService(cache_values)
     datasource = BucketCacheDatasourceService(bucket, cache)
 
-    Datasource.remove!(datasource, [key1, key2])
+    Datasource.delete!(datasource, [key1, key2])
 
-    # ensure that all values were removed from both bucket and cache
+    # ensure that all values were deleted from both bucket and cache
     @test !haskey(bucket.mockFiles, key1)
     @test !haskey(cache.mockValues, key1)
 
@@ -544,7 +544,7 @@ function test_remove_multi()
     @test !haskey(cache.mockValues, key2)
 end
 
-function test_remove_cache_only()
+function test_delete_cache_only()
     key = "somekey"
 
     bucket_text = "mock contents"
@@ -563,9 +563,9 @@ function test_remove_cache_only()
     cache = MockCacheService(cache_values)
     datasource = BucketCacheDatasourceService(bucket, cache)
 
-    Datasource.remove!(datasource, key; only_cache=true)
+    Datasource.delete!(datasource, key; only_cache=true)
 
-    # ensure that the value was removed from both bucket and cache
+    # ensure that the value was deleted from both bucket and cache
     @test haskey(bucket.mockFiles, key)
     @test !haskey(cache.mockValues, key)
 end
@@ -599,7 +599,7 @@ function test_clear_cache()
 
     Datasource.clear_cache(datasource)
 
-    # ensure that the value was removed only from cache
+    # ensure that the value was deleted only from cache
     @test haskey(bucket.mockFiles, key1)
 
     @test !haskey(cache.mockValues, key1)
@@ -622,9 +622,9 @@ function __init__()
     test_put_multi_new_value()
     test_put_not_exist_new_value()
 
-    test_remove()
-    test_remove_multi()
-    test_remove_cache_only()
+    test_delete()
+    test_delete_multi()
+    test_delete_cache_only()
 
     test_clear_cache()
 end

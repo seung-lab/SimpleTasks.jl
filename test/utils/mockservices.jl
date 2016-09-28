@@ -52,7 +52,7 @@ type MockCacheService <: CacheService
     mockValues::Dict{AbstractString, IO}
 end
 MockCacheService() = MockCacheService(Dict())
-function Cache.exists(cache::MockCacheService, key::AbstractString)
+function Cache.haskey(cache::MockCacheService, key::AbstractString)
     return haskey(cache.mockValues, key)
 end
 function Cache.put!(cache::MockCacheService, key::AbstractString,
@@ -71,7 +71,7 @@ function Cache.get(cache::MockCacheService, key::AbstractString)
         return nothing
     end
 end
-function Cache.remove!(cache::MockCacheService, key::AbstractString)
+function Cache.delete!(cache::MockCacheService, key::AbstractString)
     delete!(cache.mockValues, key)
 end
 function Cache.clear!(cache::MockCacheService)
@@ -103,7 +103,7 @@ function Datasource.put!(datasource::MockDatasourceService, key::AbstractString,
         datasource.mockSource[key] = data
     end
 end
-function Datasource.remove!(datasource::MockDatasourceService,
+function Datasource.delete!(datasource::MockDatasourceService,
     key::AbstractString; only_cache::Bool=false)
     delete!(datasource.mockSource, key)
 end

@@ -2,6 +2,8 @@ module Datasource
 
 using ...SimpleTasks.Types
 
+import Base
+
 export get, put
 
 """
@@ -13,6 +15,9 @@ allow skipping any cached values.
 function get(datasource::DatasourceService, key::AbstractString;
         override_cache::Bool=false)
     error("get is not implemented for $datasource")
+end
+function Base.getindex(datasource::DatasourceService, key::AbstractString)
+    get(datasource, key)
 end
 
 """
@@ -29,6 +34,10 @@ function get{String <: AbstractString}(datasource::DatasourceService,
     return pmap((key) -> Datasource.get(datasource, key;
         override_cache=override_cache), keys)
 end
+function Base.getindex{String <: AbstractString}(datasource::DatasourceService,
+        keys::Array{String, 1})
+    get(datasource, keys)
+end
 
 """
     put!(datasource::DatasourceService, key::AbstractString,
@@ -44,6 +53,10 @@ not specified.
 function put!(datasource::DatasourceService, key::AbstractString,
         new_value::Union{IO, Void}=nothing; only_cache::Bool=false)
     error("put! is not implemented for $datasource")
+end
+function Base.setindex!(datasource::DatasourceService, key::AbstractString,
+        new_value::Union{IO, Void}=nothing; only_cache::Bool=false)
+    put!(datasource, key, new_value)
 end
 
 """
@@ -66,6 +79,11 @@ function put!{String <: AbstractString, I <: Union{IO, Void}}(
     return pmap((index) -> Datasource.put!(datasource, keys[index],
         new_values[index]; only_cache=only_cache), 1:length(keys))
 end
+function Base.setindex!{String <: AbstractString, I <: Union{IO, Void}}(
+        datasource::DatasourceService, keys::Array{String, 1},
+        new_values::Array{I, 1}; only_cache::Bool=false)
+    put!(datasource, keys, new_values)
+end
 
 function put!{String <: AbstractString}(
         datasource::DatasourceService, keys::Array{String, 1};
@@ -78,22 +96,22 @@ end
     clear!(datasource::DatasourceService, key::AbstractString};
         only_cache::Bool=false)
 
-Remove the value from the datasource. Optionally only remove from cache.
+Delete the value from the datasource. Optionally only delete from cache.
 """
-function remove!(datasource::DatasourceService, key::AbstractString;
+function delete!(datasource::DatasourceService, key::AbstractString;
         only_cache::Bool=false)
-    error("remove! is not implemented for $datasource")
+    error("delete! is not implemented for $datasource")
 end
 
 """
-    remove!{String <: AbstractString}(datasource::DatasourceService,
+    delete!{String <: AbstractString}(datasource::DatasourceService,
         keys::Array{String, 1}; only_cache::Bool=false)
 
-Remove multiple keys from the datasource. Optionally only remove from cache
+Delete multiple keys from the datasource. Optionally only delete from cache
 """
-function remove!{String <: AbstractString}(datasource::DatasourceService,
+function delete!{String <: AbstractString}(datasource::DatasourceService,
         keys::Array{String, 1}; only_cache::Bool=false)
-    return pmap((key) -> Datasource.remove!(datasource, key;
+    return pmap((key) -> Datasource.delete!(datasource, key;
         only_cache=only_cache), keys)
 end
 

@@ -35,7 +35,7 @@ function create_path(full_path_file_name::AbstractString)
     end
 end
 
-function Cache.exists(cache::FileSystemCacheService, key::AbstractString)
+function Cache.haskey(cache::FileSystemCacheService, key::AbstractString)
     filename = to_filename(cache, key)
     return isfile(filename) && isreadable(filename)
 end
@@ -71,22 +71,24 @@ function Cache.put!(cache::FileSystemCacheService, key::AbstractString,
     # if the outcome of the put resulted in an empty file, then remove it
     # from the cache
     close(filestream)
-    if Cache.exists(cache, key) && stat(filename).size == 0
+    if Cache.haskey(cache, key) && stat(filename).size == 0
         rm(filename)
         error("Tried to cache an empty file $key into $filename")
     end
 end
 
 function Cache.get(cache::FileSystemCacheService, key::AbstractString)
-    if Cache.exists(cache, key)
+    if Cache.haskey(cache, key)
         return open(to_filename(cache, key), "r")
     else
-        return nothing
+        throw(KeyError(key))
     end
 end
 
-function Cache.remove!(cache::FileSystemCacheService, key::AbstractString)
-    rm(to_filename(cache, key))
+function Cache.delete!(cache::FileSystemCacheService, key::AbstractString)
+    if Cache.haskey(cache, key)
+        rm(to_filename(cache, key))
+    end
 end
 
 function Cache.clear!(cache::FileSystemCacheService)

@@ -31,13 +31,13 @@ function test_to_filename_sanitized()
         "$TEST_BASE_DIRECTORY///.ssh/id_rsa"
 end
 
-function test_exists()
+function test_has_key()
     filename = "testfile"
     full_path_file_name = "$TEST_BASE_DIRECTORY/$filename"
     file = open(full_path_file_name, "w")
     close(file)
     cache = make_valid_file_system_cache()
-    @test Cache.exists(cache, filename)
+    @test haskey(cache, filename)
     rm(full_path_file_name)
 end
 
@@ -45,7 +45,7 @@ function test_not_exist()
     filename = "testfileDOES NOT EXIST"
     full_path_file_name = "$TEST_BASE_DIRECTORY/$filename"
     cache = make_valid_file_system_cache()
-    @test !Cache.exists(cache, filename)
+    @test !haskey(cache, filename)
 end
 
 function test_put()
@@ -53,7 +53,7 @@ function test_put()
     test_string = "TEST"
     buffer = IOBuffer(test_string)
     cache = make_valid_file_system_cache()
-    Cache.put!(cache, filename, buffer)
+    cache[filename] = buffer
     file = open("$TEST_BASE_DIRECTORY/$filename", "r")
     @test isreadable(file)
     @test readall(file) == test_string
@@ -65,7 +65,7 @@ function test_put_path()
     test_string = "TEST"
     buffer = IOBuffer(test_string)
     cache = make_valid_file_system_cache()
-    Cache.put!(cache, filename, buffer)
+    cache[filename] = buffer
     file = open("$TEST_BASE_DIRECTORY/$filename", "r")
     @test isreadable(file)
     @test readall(file) == test_string
@@ -91,30 +91,37 @@ function test_get()
     close(buffer)
 end
 
-function test_get_not_exists()
+function test_get_not_has_key()
     filename = "testfileDOES NOT EXIST"
     cache = make_valid_file_system_cache()
-    buffer = Cache.get(cache, filename)
-    @test buffer == nothing
+    @test_throws KeyError Cache.get(cache, filename)
 end
 
-function test_remove()
+function test_delete()
     filename = "key"
     test_string = "TEST"
     buffer = IOBuffer(test_string)
     cache = make_valid_file_system_cache()
-    Cache.put!(cache, filename, buffer)
-    Cache.remove!(cache, filename)
+    cache[filename] = buffer
+    delete!(cache, filename)
     @test !isfile("$TEST_BASE_DIRECTORY/$filename")
 end
 
-function test_remove_path()
+function test_delete_not_has_key()
+    filename = "keyDOES NOT EXIST"
+    cache = make_valid_file_system_cache()
+    # should not throw
+    Cache.delete!(cache, filename)
+end
+
+function test_delete_path()
     filename = "a/b/c/key"
     test_string = "TEST"
     buffer = IOBuffer(test_string)
     cache = make_valid_file_system_cache()
-    Cache.put!(cache, filename, buffer)
-    Cache.remove!(cache, filename)
+    cache[filename] = buffer
+    delete!(cache, filename)
+    @test !isfile("$TEST_BASE_DIRECTORY/$filename")
 end
 
 function test_clear()
@@ -128,8 +135,8 @@ function test_clear()
     test_string2 = "TEST2"
     buffer2 = IOBuffer(test_string2)
 
-    Cache.put!(cache, filename1, buffer1)
-    Cache.put!(cache, filename2, buffer2)
+    cache[filename1] = buffer1
+    cache[filename2] = buffer2
     Cache.clear!(cache)
 
     @test isempty(readdir(cache.base_directory))
@@ -143,17 +150,18 @@ function __init__()
     test_to_filename()
     test_to_filename_sanitized()
 
-    test_exists()
+    test_has_key()
     test_not_exist()
 
     test_put()
     test_put_path()
 
     test_get()
-    test_get_not_exists()
+    test_get_not_has_key()
 
-    test_remove()
-    test_remove_path()
+    test_delete()
+    test_delete_not_has_key()
+    test_delete_path()
 
     test_clear()
 end
