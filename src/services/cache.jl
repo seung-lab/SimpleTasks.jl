@@ -11,7 +11,7 @@ export Service, exists, put!, get, delete!
 
 Returns true if the key is found in the cache.
 """
-function haskey(cache::CacheService, key::AbstractString)
+function Base.haskey(cache::CacheService, key::AbstractString)
     error("exists is unimplemented for $cache")
 end
 
@@ -46,7 +46,7 @@ end
 Delete the cached value for the given key.
 Does nothing if key is not found (this is what Julia `Dict` does)
 """
-function delete!(cache::CacheService, key::AbstractString)
+function Base.delete!(cache::CacheService, key::AbstractString)
     error("delete! is unimplemented for $cache")
 end
 
