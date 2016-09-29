@@ -44,7 +44,8 @@ end
     delete!(cache::CacheService, key::AbstractString)
 
 Delete the cached value for the given key.
-Does nothing if key is not found (this is what Julia `Dict` does)
+Returns cache and does nothing if key is not found (this is what Julia
+`Dict` does)
 """
 function Base.delete!(cache::CacheService, key::AbstractString)
     error("delete! is unimplemented for $cache")

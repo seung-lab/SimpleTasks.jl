@@ -97,8 +97,10 @@ end
         only_cache::Bool=false)
 
 Delete the value from the datasource. Optionally only delete from cache.
+Returns datasource and does nothing if key is not found (this is what Julia
+`Dict` does)
 """
-function delete!(datasource::DatasourceService, key::AbstractString;
+function Base.delete!(datasource::DatasourceService, key::AbstractString;
         only_cache::Bool=false)
     error("delete! is not implemented for $datasource")
 end
@@ -108,8 +110,10 @@ end
         keys::Array{String, 1}; only_cache::Bool=false)
 
 Delete multiple keys from the datasource. Optionally only delete from cache
+Returns datasource and does nothing if key is not found (this is what Julia
+`Dict` does)
 """
-function delete!{String <: AbstractString}(datasource::DatasourceService,
+function Base.delete!{String <: AbstractString}(datasource::DatasourceService,
         keys::Array{String, 1}; only_cache::Bool=false)
     return pmap((key) -> Datasource.delete!(datasource, key;
         only_cache=only_cache), keys)

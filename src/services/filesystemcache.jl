@@ -89,6 +89,7 @@ function Cache.delete!(cache::FileSystemCacheService, key::AbstractString)
     if Cache.haskey(cache, key)
         rm(to_filename(cache, key))
     end
+    return cache
 end
 
 function Cache.clear!(cache::FileSystemCacheService)

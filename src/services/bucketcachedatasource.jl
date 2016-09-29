@@ -49,6 +49,7 @@ function Datasource.delete!(datasource::BucketCacheDatasourceService,
     end
 
     delete!(datasource.cache, key)
+    return datasource
 end
 
 function Datasource.clear_cache(datasource::BucketCacheDatasourceService)
