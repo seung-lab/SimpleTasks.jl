@@ -1,14 +1,14 @@
-#SimpleTasks [![Build Status](https://travis-ci.org/seung-lab/SimpleTasks.jl.svg?branch=master)](https://travis-ci.org/seung-lab/SimpleTasks.jl)
+# SimpleTasks  [![Build Status](https://travis-ci.org/seung-lab/SimpleTasks.jl.svg?branch=master)](https://travis-ci.org/seung-lab/SimpleTasks.jl)
 
-##Why do you want this?
+## Why do you want this?
 You need to parallelize simple processes in the cloud using Julia.
 
-##How does it work?
+## How does it work?
 You provide a ```QueueService``` (AWS SQS implementation provided) and a ```BucketService``` (AWS S3 and GCS implementation provided).  Tasks are scheduled into your ```QueueService``` and data is pulled from your ```BucketService``` for processing and results are pushed back to your ```BucketService``` 
 
 See [Advanced](#advanced) for additional customization options.
 
-##Sounds great! Set me up! (Installation)
+## Sounds great! Set me up! (Installation)
 See REQUIRE file for required packages. You may need to run ```sudo apt-get install build-essential cmake``` to build certain required projects.
 
 Julia's package manager should handle the rest ```Pkg.add("SimpleTasks")```.
@@ -27,8 +27,8 @@ $sudo pip install awscli
 $aws --version
 aws-cli/1.10.56 Python/2.7.6 Linux/3.13.0-74-generic botocore/1.4.46
 ```
-##Let's do this!
-###Tutorial
+## Let's do this!
+### Tutorial
 1. Create one or many ```DaemonTask```s
   See [nooptask.jl](src/examples/nooptask.jl) for inspiration.
   
@@ -109,7 +109,7 @@ aws-cli/1.10.56 Python/2.7.6 Linux/3.13.0-74-generic botocore/1.4.46
   julia -e  julia /home/ubuntu/.julia/v0.4/SimpleTasks/src/examples/runhybriddaemon.jl TASK_QUEUE_NAME ERROR_QUEUE_NAME BUCKET_NAME CACHE_DIRECTORY POLL_FREQUENCY_SECONDS
   ```
 
-###Generated Results
+### Generated Results
 * Example of generated task
   ``` json
   {
@@ -155,8 +155,8 @@ aws-cli/1.10.56 Python/2.7.6 Linux/3.13.0-74-generic botocore/1.4.46
       
   
 
-##Advanced
-###Custom Payload
+## Advanced
+### Custom Payload
 Use case: You have many inputs to your task that are not captured by a simple AbstractString
 
 1. Create a new type for your task specific inputs
@@ -190,10 +190,10 @@ Use case: You have many inputs to your task that are not captured by a simple Ab
     dict::Dict{String, Any}) = ComplexPayloadTask(basic_info, ComplexPayload.Info(dict))
   ```
 
-###What if I don't use AWS or GCS?
+### What if I don't use AWS or GCS?
 Extend [queue.jl](src/services/queue.jl) and/or [bucket.jl](src/services/bucket.jl) and plug those into the daemon.
 
-###Datasource
+### Datasource
 Note that the bucket layout that corresponds to the ```BasicTask.Info```
 
 ```
@@ -206,11 +206,11 @@ info.base_directory = "datasets/dataset_name"
 info.inputs[1] = "task_folder/input.h5"
 ```
 
-####Warning
+#### Warning
 The provided ```FileSystemCache``` uses the filesystem. No guarantees are made to make this safe (for now)
 
-##Cloud
-###Google Cloud startup script:
+## Cloud
+### Google Cloud startup script:
 ```
 #! /bin/bash
 export AWS_ACCESS_KEY_ID=$(curl http://metadata.google.internal/computeMetadata/v1/project/attributes/aws-sqs-access-id -H "Metadata-Flavor: Google")
@@ -223,10 +223,10 @@ export POLL_FREQUENCY_SECONDS=$(curl http://metadata.google.internal/computeMeta
 sudo -u ubuntu -H sh -c "stdbuf -oL -eL julia /home/ubuntu/.julia/v0.4/SimpleTasks/src/examples/runhybriddaemon.jl $TASK_QUEUE $ERROR_QUEUE $BUCKET_NAME $CACHE_DIRECTORY $POLL_FREQUENCY_SECONDS | tee -a /home/ubuntu/daemon.out &"
 ```
 
-##Troubleshooting
+## Troubleshooting
 ### My downloaded files are showing up as ```download: s3://xxxx to ./-```
 Your AWS CLI is TOO OLD! [Update it!](#sounds-great-set-me-up-installation)
 
-##Feature Wishlist
+## Feature Wishlist
 * Dependency scheduling ? (retasking)
 
