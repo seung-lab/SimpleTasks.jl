@@ -34,7 +34,7 @@ function can_execute(task_type::Type)
     end
     for execute_method in execute_methods
         sig_types = execute_method.sig.types
-        if  length(sig_types) > 0 && sig_types[1] == task_type
+        if  length(sig_types) > 0 && sig_types[2] == task_type
             return true
         end
     end
